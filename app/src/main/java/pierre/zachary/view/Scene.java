@@ -12,8 +12,12 @@ import android.view.MotionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
+
 
 public abstract class Scene implements GLSurfaceView.Renderer
 {
@@ -21,6 +25,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
     public Context context;
     public Resources resources;
     public SparseIntArray images = new SparseIntArray ();
+    public HashMap<Integer, List<Integer>> imagesDimById = new HashMap<>();
     public float width;
     public float height;
 
@@ -159,6 +164,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
         try
         {
             bitmap = BitmapFactory.decodeStream (input, null, options);
+            imagesDimById.put(id, Arrays.asList(bitmap.getWidth(), bitmap.getHeight()));
         }
         finally
         {

@@ -5,7 +5,13 @@ import javax.microedition.khronos.opengles.GL10;
 public class SpriteRenderer extends Component{
 
     int ressourceId;
-    Vertex shape;
+    Vertex shape = new Vertex (new float[]
+            {
+                    1f,1f,0f,
+                    0f,1f,0f,
+                    1f,0f,0f,
+                    0f,0f,0f,
+            });
     Vertex texture = new Vertex (new float[]{
             1.0f, 0.0f,
             0.0f, 0.0f,
@@ -18,15 +24,6 @@ public class SpriteRenderer extends Component{
         super(gameObject);
         this.ressourceId = ressourceId;
 
-        float screenHeightRatio = 1f; // TODO
-
-        shape = new Vertex (new float[]
-                {
-                        1f,1f,0f,
-                        0f,1f,0f,
-                        1f,0f,0f,
-                        0f,0f,0f,
-                });
     }
 
 
@@ -36,6 +33,16 @@ public class SpriteRenderer extends Component{
     public void Load(GL10 gl){
         if(gameObject.scene != null){
             imageId = gameObject.scene.loadImage(gl, ressourceId);
+            float imageWidth = gameObject.scene.imagesDimById.get(imageId).get(0);
+            float imageHeight = gameObject.scene.imagesDimById.get(imageId).get(1);
+            float imageHeightRatio = imageHeight/imageWidth;
+            shape = new Vertex (new float[]
+                    {
+                            1f,imageHeightRatio,0f,
+                            0f,imageHeightRatio,0f,
+                            1f,0f,0f,
+                            0f,0f,0f,
+                    });
         }
     }
 
@@ -76,20 +83,10 @@ public class SpriteRenderer extends Component{
      */
     public boolean isInside(float x, float y){
         Transform t = this.gameObject.transform;
-        float xpos = t.ScreenPositionX();
-        float ypos = t.ScreenPositionY();
-        System.out.println("-----");
-        System.out.println((t.scaleX*Transform.gameUnitX())/Camera.main.getSize());
-        System.out.println((t.scaleY*Transform.gameUnitY())/Camera.main.getSize());
-        System.out.println("-----");
-        System.out.println(t.getAnchorPointX()/Camera.main.getSize());
-        System.out.println(t.getAnchorPointY()/Camera.main.getSize());
-        System.out.println("-----");
-        System.out.println(x);
-        System.out.println(y);
-        System.out.println("-----");
-        System.out.println(xpos);
-        System.out.println(ypos);
+        float centerX = t.ScreenPositionX(); // position au centre de l'objet en X
+        float centerY = t.ScreenPositionY();
+        //boolean xInside = x<centerX+width/2f && x>centerX-width/2f;
+        //boolean yInside = y<centerY+height/2f && y>centerY-height/2f;
         return false;
     }
 }

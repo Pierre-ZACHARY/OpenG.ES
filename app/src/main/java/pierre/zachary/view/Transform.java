@@ -86,11 +86,17 @@ public class Transform extends Component{
     }
 
     public float ScreenPositionX(){
-        return (screenWidth/2f)/Camera.main.getSize() + ((scaleX*Transform.gameUnitX())/Camera.main.getSize())/2f;
+        return (screenWidth/2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
+                + (positionX*Transform.gameUnitX())/Camera.main.getSize()  // position de l'objet
+                + (getAnchorPointX())/Camera.main.getSize() // point d'ancrage
+                + ((scaleX*Transform.gameUnitX())/Camera.main.getSize())/2f; // scale (on prend le milieu de l'objet)
     }
 
     public float ScreenPositionY(){
-        return ((screenHeight/2f)/Camera.main.getSize())/screenRatio + ((scaleY*Transform.gameUnitY())/Camera.main.getSize())/2f;
+        return ((screenHeight/2f)/Camera.main.getSize())/screenRatio
+                - ((positionY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio
+                - ((getAnchorPointY())/Camera.main.getSize())/Transform.screenRatio
+                - (((scaleY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio)/2f;
     }
 
     @Override

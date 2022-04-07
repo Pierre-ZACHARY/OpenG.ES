@@ -24,12 +24,11 @@ public class GameObject {
         transform = new Transform(this);
         name = "GameObject : "+counter;
         counter+=1;
+        scene.add(this);
     }
 
     public GameObject(Scene scene, String name){
-        this.scene = scene;
-        componentList = new ArrayList<>();
-        transform = new Transform(this);
+        this(scene);
         this.name = name;
     }
 
