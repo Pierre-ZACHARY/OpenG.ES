@@ -4,20 +4,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
-import android.opengl.Matrix;
-import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.MotionEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
 
 public abstract class Scene implements GLSurfaceView.Renderer
 {
+
     public Context context;
     public Resources resources;
     public SparseIntArray images = new SparseIntArray ();
@@ -38,17 +38,6 @@ public abstract class Scene implements GLSurfaceView.Renderer
     @Override
     public void onDrawFrame (GL10 gl)
     {
-
-        //GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-        //Matrix.setIdentityM(mViewMatrix,0);
-        //Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        //Matrix.setIdentityM(mModelMatrix,0);
-        //Matrix.translateM(mModelMatrix, 0, mSquarePosition[0], mSquarePosition[1], 0);
-        //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mModelMatrix, 0);
-
-        /* on appelle la méthode dessin du carré élémentaire */
-        //mSquare.draw(scratch, mTextureDataHandle);
-
 
 //      // clear Screen and Depth Buffer
         gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
@@ -71,7 +60,15 @@ public abstract class Scene implements GLSurfaceView.Renderer
         gl.glMatrixMode (GL10.GL_PROJECTION); // Select The Projection Matrix
         gl.glLoadIdentity (); // Reset The Projection Matrix
 
-        gl.glOrthof (0, 10f*width, 0, 10f*(height/width)*height, -1f, 1f);
+        if(Camera.main != null){
+            Transform.screenRatio = height/(width*1f);
+            Transform.screenWidth = Camera.main.getSize()*width;
+            Transform.screenHeight = Camera.main.getSize()*Transform.screenRatio*height;
+            gl.glOrthof (0, Transform.screenWidth, 0, Transform.screenHeight, -1f, 1f);
+        }
+        else{
+            gl.glOrthof (0, width, 0, height, -1f, 1f);
+        }
         //gl.glTranslatef (0f, -height/2, 0.0f); // move the camera !!
 
 
@@ -101,20 +98,35 @@ public abstract class Scene implements GLSurfaceView.Renderer
         init (gl);
     }
 
+    ArrayList<GameObject> gameObjectList = new ArrayList<>();
+
+    public void add(GameObject gameObject){
+        gameObjectList.add(gameObject);
+    }
+
+    public void remove(GameObject gameObject){
+        gameObjectList.remove(gameObject);
+    }
 
     public void init (GL10 gl)
     {
-
+        for(GameObject g : gameObjectList){
+            g.Start();
+        }
     }
 
     public void load (GL10 gl)
     {
-
+        for(GameObject g : gameObjectList){
+            g.Load(gl);
+        }
     }
 
     public void draw (GL10 gl)
     {
-
+        for(GameObject g : gameObjectList){
+            g.Update(gl);
+        }
     }
 
     private static int next (GL10 gl)
@@ -124,7 +136,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
         return temp[0];
     }
 
-    public int image (GL10 gl, int resource)
+    public int loadImage (GL10 gl, int resource)
     {
         int id = next (gl);
         images.put (resource, id);
@@ -166,6 +178,14 @@ public abstract class Scene implements GLSurfaceView.Renderer
 
         GLUtils.texImage2D (GL10.GL_TEXTURE_2D, 0, bitmap, 0);
         return id;
+    }
+
+
+
+    public void onTouchEvent(MotionEvent e){
+        for(GameObject gameObject : gameObjectList){
+            gameObject.OnTouchEvent(e);
+        }
     }
 
 }

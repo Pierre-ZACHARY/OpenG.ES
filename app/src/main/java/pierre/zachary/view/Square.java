@@ -30,23 +30,20 @@ public class Square
     /** The draw method for the square with the GL context */
     public void draw (GL10 gl, int image, float x, float y, float width, float height, float corner)
     {
-        if (corner>=0)
-        {
-            corner += 1;
-        }
-        if (corner>360)
-        {
-            corner = -1;
-        }
+
         gl.glPushMatrix();
 
-        x += 10f;
+        //x += 10f;
         if (x>8000)
         {
             x = 0;
         }
 
-        position (gl, (10f*width)/2+x, (10f*(height/width)*height)/2+y, 1f*width, 1f*height, corner);
+        //position (gl, (10f*width)/2+x, (10f*(height/width)*height)/2+y, 1f*width, 1f*height, corner);
+
+        gl.glTranslatef (((10f*width)/2+x)-width/2, ((10f*(height/width)*height)/2+y)-height/2, 0f); //MOVE !!! 1f is size of figure if called after scaling, 1f is pixel if called before scaling
+        gl.glScalef (width, height, 0f); // ADJUST SIZE !!!
+
 
         // bind the previously generated texture
         gl.glBindTexture(GL10.GL_TEXTURE_2D, image);
@@ -79,13 +76,13 @@ public class Square
     {
         gl.glTranslatef (x-width/2, y-height/2, 0f); //MOVE !!! 1f is size of figure if called after scaling, 1f is pixel if called before scaling
 
-        if (corner>0)
+        /*if (corner>0)
         {
             gl.glTranslatef (width/2, height/2, 0f);
             gl.glRotatef (corner, 0f, 0f, 1f); // ROTATE !!!
             gl.glTranslatef (-width/2, -height/2, 0f);
 
-        }
+        }*/
 
         gl.glScalef (width, height, 0f); // ADJUST SIZE !!!
 

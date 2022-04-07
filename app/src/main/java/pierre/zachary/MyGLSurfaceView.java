@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import pierre.zachary.view.MainScene;
+import pierre.zachary.view.Scene;
 
 /* La classe MyGLSurfaceView avec en particulier la gestion des événements
   et la création de l'objet renderer
@@ -36,7 +37,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
     /* Un attribut : le renderer (GLSurfaceView.Renderer est une interface générique disponible) */
     /* MyGLRenderer va implémenter les méthodes de cette interface */
 
-    private final MainScene mRenderer;
+    private Scene mRenderer;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -61,7 +62,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         // Les coordonnées du point touché sur l'écran
-
+        mRenderer.onTouchEvent(e);
         return true;
     }
 

@@ -7,24 +7,27 @@ import javax.microedition.khronos.opengles.GL10;
 import pierre.zachary.R;
 
 public class MainScene extends Scene {
-    Square square1, square2;
-
+    //Square square1, square2;
+    Camera mainCam;
+    GameObject imageGO2, imageGO;
 
     public MainScene(Context context) {
         super(context);
-        // TODO Auto-generated constructor stub
-    }
+        mainCam = new Camera( 10, true);
+        imageGO = new GameObject(this);
+        imageGO.transform.positionX = 1;
+        imageGO.transform.scaleX = 1;
+        imageGO.transform.positionY = 2;
+        imageGO.addComponent(new SpriteRenderer(imageGO, R.mipmap.red_icon));
+        imageGO.addComponent(new SpriteCollider(imageGO));
 
-    public void init(GL10 gl) {
-        square1 = new Square();
-        square2 = new Square();
-    }
-
-    public void load(GL10 gl) {
-        image(gl, R.drawable.bluerectangle);
-    }
-
-    public void draw(GL10 gl) {
-        square1.draw(gl, images.get(R.drawable.bluerectangle), 0, 0, width, height, 0);
+        imageGO2 = new GameObject(this);
+        imageGO2.transform.positionX = 1;
+        imageGO2.transform.scaleX = 2;
+        imageGO2.transform.positionY = 3;
+        imageGO2.addComponent(new SpriteRenderer(imageGO2, R.mipmap.red_icon));
+        imageGO2.addComponent(new SpriteCollider(imageGO2));
+        super.add(imageGO2);
+        super.add(imageGO);
     }
 }
