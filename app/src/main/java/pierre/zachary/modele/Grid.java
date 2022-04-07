@@ -15,6 +15,11 @@ public class Grid {
     private final int type;
     private final Score score;
     private final Drawer drawer;
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
     private int gridSize = 9;
     private int pionsAligne = 5;
     private ArrayList<Pions> grid;
@@ -34,15 +39,21 @@ public class Grid {
                 this.pionsAligne = 4;
         }
         this.grid = new ArrayList<Pions>(this.gridSize*this.gridSize);
+        for(int i = 0; i<getGridSize()*getGridSize();i++){
+            this.grid.add(null);
+        }
         this.next = new ArrayList<>(3);
+        for(int i = 0; i<3;i++){
+            this.next.add(null);
+        }
         this.populateNext();
     }
 
-    public Pions getPions(int x, int y){
+    private Pions getPions(int x, int y){
         return this.grid.get(x*this.gridSize+y);
     }
 
-    public void setPions(Pions p, int x, int y){
+    private void setPions(Pions p, int x, int y){
         this.grid.set(x*this.gridSize+y, p);
     }
 
@@ -51,14 +62,14 @@ public class Grid {
         return new Pions(rand);
     }
 
-    public void populateNext(){
+    private void populateNext(){
         for(int i = 0; i<3; i++){
             this.next.set(i, this.randomPions());
         }
         this.drawer.drawNext(this.next);
     }
 
-    public List<Position> getVide(){
+    private List<Position> getVide(){
         List<Position> res = new ArrayList<>();
         int x = 0;
         int y = 0;

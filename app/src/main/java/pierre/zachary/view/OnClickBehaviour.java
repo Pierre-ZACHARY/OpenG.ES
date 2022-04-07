@@ -8,6 +8,6 @@ public class OnClickBehaviour extends MonoBehaviour{
     @Override
     public void OnTouchDown(float x, float y) {
         super.OnTouchDown(x, y);
-        System.out.println(gameObject.name + " Touched");
+        System.out.println(gameObject.name + " touché");
     }
 }
