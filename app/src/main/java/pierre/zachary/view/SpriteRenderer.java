@@ -3,7 +3,7 @@ package pierre.zachary.view;
 import javax.microedition.khronos.opengles.GL10;
 
 public class SpriteRenderer extends Component{
-
+    float imageHeightRatio = 1f;
     int ressourceId;
     Vertex shape = new Vertex (new float[]
             {
@@ -35,7 +35,7 @@ public class SpriteRenderer extends Component{
             imageId = gameObject.scene.loadImage(gl, ressourceId);
             float imageWidth = gameObject.scene.imagesDimById.get(imageId).get(0);
             float imageHeight = gameObject.scene.imagesDimById.get(imageId).get(1);
-            float imageHeightRatio = imageHeight/imageWidth;
+            imageHeightRatio = imageHeight/imageWidth;
             shape = new Vertex (new float[]
                     {
                             1f,imageHeightRatio,0f,
@@ -85,8 +85,8 @@ public class SpriteRenderer extends Component{
         Transform t = this.gameObject.transform;
         float centerX = t.ScreenPositionX(); // position au centre de l'objet en X
         float centerY = t.ScreenPositionY();
-        //boolean xInside = x<centerX+width/2f && x>centerX-width/2f;
-        //boolean yInside = y<centerY+height/2f && y>centerY-height/2f;
-        return false;
+        boolean xInside = x<centerX+(Transform.gameUnitX()/Camera.main.getSize())/2f && x>centerX-(Transform.gameUnitX()/Camera.main.getSize())/2f;
+        boolean yInside = y<centerY+(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f && y>centerY-(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f;
+        return xInside && yInside;
     }
 }

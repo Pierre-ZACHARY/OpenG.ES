@@ -21,6 +21,7 @@ public class SpriteCollider extends Component{
 
     @Override
     public void OnTouchEvent(MotionEvent e){
+
         float x = e.getX();
         float y = e.getY();
 
@@ -28,7 +29,8 @@ public class SpriteCollider extends Component{
             for(Component c : this.gameObject.componentList){
                 if(c instanceof MonoBehaviour){
                     MonoBehaviour script = (MonoBehaviour) c;
-                    script.OnTouchDown(x, y);
+                    if(e.getAction() == MotionEvent.ACTION_DOWN)
+                        script.OnTouchDown(x, y);
                 }
             }
         }
