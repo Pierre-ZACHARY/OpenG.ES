@@ -25,10 +25,15 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     Facade jeu;
     Grid grid;
 
+    GameObject case_selector;
+
     public GameManager(GameObject gameObject) {
         super(gameObject);
         jeu = new Facade(this, this);
         grid = jeu.Level9x9();
+
+
+
         for(int i = 0; i<grid.getGridSize(); i++){
             for(int j=0; j< grid.getGridSize(); j++){
                 float start = -(Camera.main.getSize()/2f);
@@ -40,12 +45,16 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 caseGO.addComponent(new OnClickCallBackBehaviour(caseGO, new Function<GameObject, String>() {
                     @Override
                     public String apply(GameObject gameObject) {
-                        grid.spawnNext();
+                        case_selector.transform.positionX = gameObject.transform.positionX;
+                        case_selector.transform.positionY = gameObject.transform.positionY;
                         return null;
                     }
                 }));
             }
         }
+        case_selector = new GameObject(this.gameObject.scene, "Case selector");
+        case_selector.addComponent(new SpriteRenderer(case_selector, R.drawable.case_select));
+        case_selector.addComponent(new SpriteCollider(case_selector));
         grid.spawnNext();
     }
 
