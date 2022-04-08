@@ -173,11 +173,13 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     }
 
     public void MoovePosition(GameObject pionsGO, float posX, float posY, long endMilli){
+        // TODO ne pas faire comme ça : calculer la position courante au moment du draw : extends la classe gameobject et avant d'appeler Transform.draw, calculer la position de l'objet à l'instant du draw
+        // Attention, sur plusieurs positions sont définis les unes après les autres, l'objet risque de passé à travers les murs : en gros il va prendre la dernière target qu'on lui a attribué à va y aller depuis sa position courante, il faut donc prendre en compte chaque target les unes après les autres pour voir le chemin parcouru normalement
+
         long start = new Date().getTime();
         float positionXInitiale = pionsGO.transform.positionX;
         float positionYInitiale = pionsGO.transform.positionY;
         while(new Date().getTime() < start+endMilli){
-            System.out.println("ici");
             float progress = (new Date().getTime())/((start+endMilli)*1f) ;
             pionsGO.transform.positionX = (float) (positionXInitiale+easeInSine(progress)*(posX-positionXInitiale));
             pionsGO.transform.positionY = (float) (positionYInitiale+easeInSine(progress)*(posY-positionYInitiale));
