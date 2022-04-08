@@ -28,4 +28,8 @@ public class Facade {
         g.moove(from.getX(), from.getY(), to.getX(), to.getY());
     }
 
+    public void moove(Pions from, Position to) throws TargetNotEmpty, NoPossiblePath {
+        moove(g.getPosition(from), to);
+    }
+
 }

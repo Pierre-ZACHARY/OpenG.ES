@@ -50,8 +50,21 @@ public class Grid {
         this.populateNext();
     }
 
+    public Position getPosition(Pions p){
+        if(!grid.contains(p)){
+            return null;
+        }
+        int index = grid.indexOf(p);
+        int x = index / gridSize;
+        int y = index % gridSize;
+        return new Position(x, y);
+    }
+
     public Pions getPions(int x, int y){
-        return this.grid.get(x*this.gridSize+y);
+        if(x*this.gridSize+y > 0 && x*this.gridSize+y<gridSize*gridSize){
+            return this.grid.get(x*this.gridSize+y);
+        }
+        return null;
     }
 
     public boolean containsPions(Pions p){
@@ -229,8 +242,10 @@ public class Grid {
             ArrayList<AstarNode> newParents = new ArrayList<>(parent);
             newParents.add(this);
 
-            if(grid.getPions(this.etat.getX()+1, this.etat.getY()) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX() + 1, this.etat.getY()), newParents, this.target)); }
-            if(grid.getPions(this.etat.getX()-1, this.etat.getY()) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX() - 1, this.etat.getY()), newParents, this.target)); }
+            if(grid.getPions(this.etat.getX()+1, this.etat.getY()) != null){
+                res.add(new AstarNode(this.grid, new Position(this.etat.getX() + 1, this.etat.getY()), newParents, this.target)); }
+            if(grid.getPions(this.etat.getX()-1, this.etat.getY()) != null){
+                res.add(new AstarNode(this.grid, new Position(this.etat.getX() - 1, this.etat.getY()), newParents, this.target)); }
             if(grid.getPions(this.etat.getX(), this.etat.getY()+1) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() + 1), newParents, this.target)); }
             if(grid.getPions(this.etat.getX(), this.etat.getY()-1) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() - 1), newParents, this.target)); }
             return res;
@@ -244,11 +259,14 @@ public class Grid {
     }
 
     private List<Position> aStar(Position from, Position to) throws NoPossiblePath {
+        System.out.println(from);
+        System.out.println(to);
         AstarNode node = new AstarNode(this, from, new ArrayList<>(), to);
         ArrayList<AstarNode> file = new ArrayList<>();
 
         while(node.etat != to){
             file.addAll(node.getChilds());
+            System.out.println(file);
             if(file.size() == 0){
                 throw new NoPossiblePath();
             }

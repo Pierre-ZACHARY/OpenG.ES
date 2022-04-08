@@ -5,6 +5,7 @@ import static java.lang.Math.cos;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,14 +19,20 @@ import pierre.zachary.modele.Drawer;
 import pierre.zachary.modele.Facade;
 import pierre.zachary.modele.Grid;
 import pierre.zachary.modele.Pions;
+import pierre.zachary.modele.Position;
 import pierre.zachary.modele.Score;
+import pierre.zachary.modele.exception.NoPossiblePath;
+import pierre.zachary.modele.exception.TargetNotEmpty;
 
 public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     Facade jeu;
     Grid grid;
 
+    List<GameObject> gridGO = new ArrayList<>();
     GameObject case_selector;
+
+    Pions selectedPion;
 
     public GameManager(GameObject gameObject) {
         super(gameObject);
@@ -38,6 +45,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
             for(int j=0; j< grid.getGridSize(); j++){
                 float start = -(Camera.main.getSize()/2f);
                 GameObject caseGO = new GameObject(this.gameObject.scene, "Case "+i+":"+j);
+                gridGO.add(caseGO);
                 caseGO.transform.positionX = start+i+0.5f; // 0.5 car le transform est au centre du gameobject
                 caseGO.transform.positionY = start+j+0.5f;
                 caseGO.addComponent(new SpriteRenderer(caseGO, R.drawable.resource_case));
@@ -45,16 +53,25 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 caseGO.addComponent(new OnClickCallBackBehaviour(caseGO, new Function<GameObject, String>() {
                     @Override
                     public String apply(GameObject gameObject) {
-                        case_selector.transform.positionX = gameObject.transform.positionX;
-                        case_selector.transform.positionY = gameObject.transform.positionY;
+                        if(case_selector != null && (case_selector.transform.positionX != gameObject.transform.positionX || case_selector.transform.positionY != gameObject.transform.positionY)){
+                            case_selector.scene.remove(case_selector);
+                            if(selectedPion!=null){
+                                int index = gridGO.indexOf(gameObject);
+                                int x = index / grid.getGridSize();
+                                int y = index % grid.getGridSize();
+                                try {
+                                    jeu.moove(selectedPion, new Position(x, y));
+                                } catch (TargetNotEmpty | NoPossiblePath targetNotEmpty) {
+                                    targetNotEmpty.printStackTrace();
+                                }
+                            }
+                        }
                         return null;
                     }
                 }));
+
             }
         }
-        case_selector = new GameObject(this.gameObject.scene, "Case selector");
-        case_selector.addComponent(new SpriteRenderer(case_selector, R.drawable.case_select));
-        case_selector.addComponent(new SpriteCollider(case_selector));
         grid.spawnNext();
     }
 
@@ -79,6 +96,15 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     }
 
     private HashMap<Pions, GameObject> pionsGameObjectHashMap = new HashMap<>();
+
+    private Pions getPions(GameObject pionsGO){
+        for(Map.Entry<Pions, GameObject> entry : pionsGameObjectHashMap.entrySet()){
+            if(entry.getValue() == pionsGO){
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
     @Override
     public void drawGrid(Grid g) {
@@ -105,7 +131,25 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         pionsGO.transform.positionY = start+j+0.5f;
                         pionsGO.addComponent(new SpriteRenderer(pionsGO, this.getImageRessource(p)));
                         pionsGO.addComponent(new SpriteCollider(pionsGO));
-                        pionsGO.addComponent(new OnClickBehaviour(pionsGO));
+                        pionsGO.addComponent(new OnClickCallBackBehaviour(pionsGO, new Function<GameObject, String>() {
+                            @Override
+                            public String apply(GameObject gameObject) {
+                                Pions p = getPions(gameObject);
+                                if(p!=null){
+                                    selectedPion = p;
+                                    if(case_selector!=null){
+                                        case_selector.scene.remove(case_selector);
+                                    }
+                                    case_selector = new GameObject(gameObject.scene, "Case selector");
+                                    case_selector.addComponent(new SpriteRenderer(case_selector, R.drawable.case_select));
+                                    case_selector.addComponent(new SpriteCollider(case_selector));
+                                    case_selector.transform.positionX = gameObject.transform.positionX;
+                                    case_selector.transform.positionY = gameObject.transform.positionY;
+                                }
+
+                                return null;
+                            }
+                        }));
                         pionsGameObjectHashMap.put(p, pionsGO);
                     }
                     else{
