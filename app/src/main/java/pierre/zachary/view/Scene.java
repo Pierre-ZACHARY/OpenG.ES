@@ -18,20 +18,24 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import pierre.zachary.MyGLSurfaceView;
+
 
 public abstract class Scene implements GLSurfaceView.Renderer
 {
 
+    private final MyGLSurfaceView myGLSurfaceView;
     public Context context;
     public Resources resources;
-    public SparseIntArray images = new SparseIntArray ();
+    public HashMap<Integer, Integer> images = new HashMap<> ();
     public HashMap<Integer, List<Integer>> imagesDimById = new HashMap<>();
     public float width;
     public float height;
 
-    public Scene (Context context)
+    public Scene(Context context, MyGLSurfaceView myGLSurfaceView)
     {
         this.context = context;
+        this.myGLSurfaceView = myGLSurfaceView;
         this.resources = context.getResources ();
     }
 
@@ -103,7 +107,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
         init (gl);
     }
 
-    ArrayList<GameObject> gameObjectList = new ArrayList<>();
+    private ArrayList<GameObject> gameObjectList = new ArrayList<>();
 
     public void add(GameObject gameObject){
         gameObjectList.add(gameObject);
@@ -113,24 +117,33 @@ public abstract class Scene implements GLSurfaceView.Renderer
         gameObjectList.remove(gameObject);
     }
 
+
+
     public void init (GL10 gl)
     {
-        for(GameObject g : gameObjectList){
+        for(GameObject g : new ArrayList<>(gameObjectList)){
             g.Start();
         }
     }
 
     public void load (GL10 gl)
     {
-        for(GameObject g : gameObjectList){
+        for(GameObject g : new ArrayList<>(gameObjectList)){
             g.Load(gl);
         }
     }
 
     public void draw (GL10 gl)
     {
-        for(GameObject g : gameObjectList){
-            g.Update(gl);
+        for (GameObject g : new ArrayList<>(gameObjectList)) {
+            g.Draw(gl);
+        }
+
+    }
+
+    public void onTouchEvent(MotionEvent e){
+        for (GameObject gameObject : new ArrayList<>(gameObjectList)) {
+            gameObject.OnTouchEvent(e);
         }
     }
 
@@ -143,6 +156,9 @@ public abstract class Scene implements GLSurfaceView.Renderer
 
     public int loadImage (GL10 gl, int resource)
     {
+        if(images.containsKey(resource)){
+            return images.get(resource);
+        }
         int id = next (gl);
         images.put (resource, id);
 
@@ -188,10 +204,6 @@ public abstract class Scene implements GLSurfaceView.Renderer
 
 
 
-    public void onTouchEvent(MotionEvent e){
-        for(GameObject gameObject : gameObjectList){
-            gameObject.OnTouchEvent(e);
-        }
-    }
+
 
 }

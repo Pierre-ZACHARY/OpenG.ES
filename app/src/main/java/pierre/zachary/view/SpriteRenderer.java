@@ -25,8 +25,7 @@ public class SpriteRenderer extends Component{
         this.ressourceId = ressourceId;
 
     }
-
-
+    boolean hasBeenLoaded = false;
     int imageId;
 
     @Override
@@ -43,12 +42,15 @@ public class SpriteRenderer extends Component{
                             1f,0f,0f,
                             0f,0f,0f,
                     });
+            hasBeenLoaded = true;
         }
     }
 
     @Override
-    public void Update(GL10 gl){
-
+    public void Draw(GL10 gl){
+        if(!hasBeenLoaded){
+            Load(gl);
+        }
         // bind the previously generated texture
         gl.glBindTexture(GL10.GL_TEXTURE_2D, imageId);
 

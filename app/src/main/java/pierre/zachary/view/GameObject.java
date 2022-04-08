@@ -5,7 +5,6 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -56,16 +55,26 @@ public class GameObject {
         }
     }
 
-    public void Update(GL10 gl){ // TODO rename en draw
+    public void Draw(GL10 gl){ // TODO rename en draw
         gl.glPushMatrix();
 
-        transform.Update(gl);
+        transform.Draw(gl);
 
         for(Component e : componentList){
-            e.Update(gl);
+            e.Draw(gl);
         }
 
         gl.glPopMatrix();
+    }
+
+    public void Update(){
+        // call avant un draw
+
+        for(Component e : componentList){
+            if(e instanceof MonoBehaviour){
+                ((MonoBehaviour) e).Update();
+            }
+        }
     }
 
     public void OnTouchEvent(MotionEvent e){

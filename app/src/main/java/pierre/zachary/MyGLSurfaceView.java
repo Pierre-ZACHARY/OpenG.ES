@@ -41,16 +41,22 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
     public MyGLSurfaceView(Context context) {
         super(context);
+
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         // Création d'un context OpenGLES 3.0
         setEGLContextClientVersion(1);
 
         // Création du renderer qui va être lié au conteneur View créé
-        mRenderer = new MainScene(context);
+        mRenderer = new MainScene(context, this);
         setRenderer(mRenderer);
 
         // Option pour indiquer qu'on redessine uniquement si les données changent
-        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+    }
+
+    public void redraw(){
+        requestRender();
     }
 
     /* pour gérer la translation */

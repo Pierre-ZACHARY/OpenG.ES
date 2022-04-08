@@ -12,7 +12,7 @@ public abstract class Component {
         this.gameObject = gameObject;
     }
 
-    public void Update(GL10 gl) {
+    public void Draw(GL10 gl) {
 
     }
 

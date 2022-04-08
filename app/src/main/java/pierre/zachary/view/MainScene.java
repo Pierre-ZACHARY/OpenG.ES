@@ -4,6 +4,7 @@ import android.content.Context;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import pierre.zachary.MyGLSurfaceView;
 import pierre.zachary.R;
 import pierre.zachary.modele.Facade;
 
@@ -14,8 +15,8 @@ public class MainScene extends Scene {
 
     Facade gameFacade;
 
-    public MainScene(Context context) {
-        super(context);
+    public MainScene(Context context, MyGLSurfaceView myGLSurfaceView) {
+        super(context, myGLSurfaceView);
         mainCam = new Camera( 9, true);
         imageGO = new GameObject(this, "Image Bleu");
         imageGO.transform.positionX = 0;

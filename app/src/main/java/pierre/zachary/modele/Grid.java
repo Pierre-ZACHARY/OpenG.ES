@@ -3,6 +3,7 @@ package pierre.zachary.modele;
 import androidx.recyclerview.widget.SortedList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -49,8 +50,12 @@ public class Grid {
         this.populateNext();
     }
 
-    private Pions getPions(int x, int y){
+    public Pions getPions(int x, int y){
         return this.grid.get(x*this.gridSize+y);
+    }
+
+    public boolean containsPions(Pions p){
+        return this.grid.contains(p);
     }
 
     private void setPions(Pions p, int x, int y){
@@ -58,7 +63,7 @@ public class Grid {
     }
 
     private Pions randomPions(){
-        int rand = new Random().nextInt(8);
+        int rand = new Random().nextInt(7);
         return new Pions(rand);
     }
 
@@ -71,16 +76,12 @@ public class Grid {
 
     private List<Position> getVide(){
         List<Position> res = new ArrayList<>();
-        int x = 0;
-        int y = 0;
-        for(Pions p : this.grid){
-            if(p == null){
-                res.add(new Position(x, y));
-            }
-            x++;
-            if(x>=this.gridSize){
-                x=0;
-                y++;
+        for(int i = 0; i<getGridSize(); i++){
+            for(int j = 0; j<getGridSize(); j++){
+                Pions p = getPions(i,j);
+                if(p == null){
+                    res.add(new Position(i,j));
+                }
             }
         }
         return res;
@@ -88,13 +89,17 @@ public class Grid {
 
     public void spawnNext(){
         // on fait spawn les 3 pions à 3 endroits vide de la grille puis on re populate
-        List<Position> vide = this.getVide();
         for(int i = 0; i<3; i++){
+            List<Position> vide = this.getVide();
+            if(vide.size() == 0){
+                this.drawer.gameOver(this);
+                break;
+            }
             int index = new Random().nextInt(vide.size());
             this.setPions(this.next.get(i), vide.get(index));
             this.checkAlignement(vide.get(index));
         }
-        this.drawer.drawGrid(this);
+        this.draw();
         this.populateNext();
         this.drawer.drawNext(this.next);
     }
@@ -103,32 +108,50 @@ public class Grid {
         listPos.sort(new PositionComparator());
         for(Position p : listPos){
             this.setPions(null, p);
-            this.drawer.drawGrid(this);
+            this.draw();
         }
+    }
+
+    public void draw(){
+        System.out.println("DRAW GRID");
+
+        for(int i = 0; i<getGridSize(); i++){
+            for(int j = 0; j<getGridSize(); j++){
+                Pions p = getPions(i,j);
+                if(p == null){
+                    System.out.print('-');
+                }
+                else{
+                    System.out.print(p.getType());
+                }
+            }
+            System.out.println("");
+        }
+        this.drawer.drawGrid(this);
     }
 
     public void checkAlignement(Position p){
         Pions base = this.getPions(p.getX(), p.getY());
-        List<Position> alignedX = new ArrayList<>();
-        List<Position> alignedY = new ArrayList<>();
+        ArrayList<Position> alignedX = new ArrayList<>(Arrays.asList(p));
+        ArrayList<Position> alignedY = new ArrayList<>(Arrays.asList(p));
         int[][] directionsX = {{-1,0}, {1,0}};
         int[][] directionsY = {{0,-1}, {0,1}};
 
         for(int[] dir : directionsX){
-            for(int i = 0; i<this.gridSize; i++){
+            for(int i = 1; p.getX()+dir[0]*i<this.gridSize && p.getX()+dir[0]*i>0; i++){
                 Position pion_pos = new Position(p.getX()+dir[0]*i, p.getY());
                 Pions pions = this.getPions(pion_pos);
-                if(pions != base){
+                if(pions == null || !pions.sameType(base)){
                     break;
                 }
                 alignedX.add(pion_pos);
             }
         }
         for(int[] dir : directionsY){
-            for(int i = 0; i<this.gridSize; i++){
+            for(int i = 1; p.getY()+dir[1]*i<this.gridSize && p.getY()+dir[1]*i>0; i++){
                 Position pion_pos = new Position(p.getX(), p.getY()+dir[1]*i);
                 Pions pions = this.getPions(pion_pos);
-                if(pions != base){
+                if(pions == null || !pions.sameType(base)){
                     break;
                 }
                 alignedY.add(pion_pos);
@@ -164,7 +187,7 @@ public class Grid {
             this.setPions(depart, p);
             this.setPions(null, lastPos);
             lastPos = p;
-            this.drawer.drawGrid(this);
+            this.draw();
         }
         this.checkAlignement(path.get(path.size()-1));
     }
