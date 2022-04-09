@@ -102,6 +102,8 @@ public class Transform extends Component{
     @Override
     public void Draw(GL10 gl){
 
+        //positionX += 0.001f;
+
         gl.glRotatef (rotationZ, 0f, 0f, 1f); // ROTATION Z
         gl.glRotatef (rotationY, 0f, 1f, 0f); // ROTATION Y
         gl.glRotatef (rotationX, 1f, 0f, 0f); // ROTATION X

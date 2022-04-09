@@ -110,11 +110,15 @@ public abstract class Scene implements GLSurfaceView.Renderer
     private ArrayList<GameObject> gameObjectList = new ArrayList<>();
 
     public void add(GameObject gameObject){
-        gameObjectList.add(gameObject);
+        if(!gameObjectList.contains(gameObject))
+            gameObjectList.add(gameObject);
     }
 
     public void remove(GameObject gameObject){
         gameObjectList.remove(gameObject);
+    }
+    public boolean contains(GameObject gameObject){
+        return gameObjectList.contains(gameObject);
     }
 
 

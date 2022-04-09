@@ -1,6 +1,7 @@
 package pierre.zachary.modele;
 
 import pierre.zachary.modele.exception.NoPossiblePath;
+import pierre.zachary.modele.exception.PionsNotInGrid;
 import pierre.zachary.modele.exception.TargetNotEmpty;
 
 public class Facade {
@@ -28,8 +29,12 @@ public class Facade {
         g.moove(from.getX(), from.getY(), to.getX(), to.getY());
     }
 
-    public void moove(Pions from, Position to) throws TargetNotEmpty, NoPossiblePath {
-        moove(g.getPosition(from), to);
+    public void moove(Pions from, Position to) throws TargetNotEmpty, NoPossiblePath, PionsNotInGrid {
+        Position p  = g.getPosition(from);
+        if(p == null){
+            throw new PionsNotInGrid();
+        }
+        moove(p, to);
     }
 
 }

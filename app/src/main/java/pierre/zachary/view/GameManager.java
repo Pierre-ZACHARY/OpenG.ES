@@ -22,6 +22,8 @@ import pierre.zachary.modele.Pions;
 import pierre.zachary.modele.Position;
 import pierre.zachary.modele.Score;
 import pierre.zachary.modele.exception.NoPossiblePath;
+import pierre.zachary.modele.exception.OutofBounds;
+import pierre.zachary.modele.exception.PionsNotInGrid;
 import pierre.zachary.modele.exception.TargetNotEmpty;
 
 public class GameManager extends MonoBehaviour implements Score, Drawer {
@@ -61,7 +63,8 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                                 int y = index % grid.getGridSize();
                                 try {
                                     jeu.moove(selectedPion, new Position(x, y));
-                                } catch (TargetNotEmpty | NoPossiblePath targetNotEmpty) {
+                                    selectedPion = null;
+                                } catch (TargetNotEmpty | NoPossiblePath | PionsNotInGrid targetNotEmpty) {
                                     targetNotEmpty.printStackTrace();
                                 }
                             }
@@ -77,7 +80,6 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     private int getImageRessource(Pions p){
         if(p!=null){
-            System.out.println("ici");
             switch(p.getType()){
                 case 0: return R.drawable.bonbon_bleu;
                 case 1: return R.drawable.bonbon_orange;
@@ -108,6 +110,9 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     @Override
     public void drawGrid(Grid g) {
+
+
+
         float start = -(Camera.main.getSize()/2f);
 
         for(Map.Entry<Pions, GameObject> entry : pionsGameObjectHashMap.entrySet()){
@@ -116,12 +121,18 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
             }
             else{
                 // si pas dans la scene : le remettre
+                //entry.getValue().transform.positionX+=0.1f;
             }
         }
 
         for(int i = 0; i < grid.getGridSize(); i++){
             for(int j = 0; j < grid.getGridSize(); j++){
-                Pions p = grid.getPions(i,j);
+                Pions p = null;
+                try {
+                    p = grid.getPions(i,j);
+                } catch (OutofBounds outofBounds) {
+                    outofBounds.printStackTrace();
+                }
 
                 if(p!=null){
                     if(!pionsGameObjectHashMap.containsKey(p)){
@@ -154,13 +165,21 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     }
                     else{
                         GameObject pionsGO = pionsGameObjectHashMap.get(p);
-                        //this.MoovePosition(pionsGO, start+i+0.5f, start+j+0.5f, 2000);
+                        pionsGO.name = "Pions "+i+":"+j;
+                        pionsGO.transform.positionX = start+i+0.5f;
+                        pionsGO.transform.positionY = start+j+0.5f;
+                        pionsGO.scene.add(pionsGO);
                     }
 
                 }
             }
         }
-
+        if(selectedPion != null && !grid.containsPions(selectedPion)){
+            GameObject pionsGo = pionsGameObjectHashMap.get(selectedPion);
+            pionsGo.scene.remove(pionsGo);
+            selectedPion = null;
+            case_selector.scene.remove(case_selector);
+        }
     }
 
 

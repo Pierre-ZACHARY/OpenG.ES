@@ -1,14 +1,19 @@
 package pierre.zachary.modele;
 
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 import androidx.recyclerview.widget.SortedList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import pierre.zachary.modele.exception.NoPossiblePath;
+import pierre.zachary.modele.exception.OutofBounds;
 import pierre.zachary.modele.exception.TargetNotEmpty;
 
 public class Grid {
@@ -60,11 +65,11 @@ public class Grid {
         return new Position(x, y);
     }
 
-    public Pions getPions(int x, int y){
-        if(x*this.gridSize+y > 0 && x*this.gridSize+y<gridSize*gridSize){
+    public Pions getPions(int x, int y) throws OutofBounds {
+        if(x >= 0 && y >= 0 && x*this.gridSize+y<gridSize*gridSize){
             return this.grid.get(x*this.gridSize+y);
         }
-        return null;
+        throw new OutofBounds();
     }
 
     public boolean containsPions(Pions p){
@@ -91,7 +96,12 @@ public class Grid {
         List<Position> res = new ArrayList<>();
         for(int i = 0; i<getGridSize(); i++){
             for(int j = 0; j<getGridSize(); j++){
-                Pions p = getPions(i,j);
+                Pions p = null;
+                try {
+                    p = getPions(i,j);
+                } catch (OutofBounds outofBounds) {
+                    outofBounds.printStackTrace();
+                }
                 if(p == null){
                     res.add(new Position(i,j));
                 }
@@ -126,25 +136,16 @@ public class Grid {
     }
 
     public void draw(){
-        System.out.println("DRAW GRID");
-
-        for(int i = 0; i<getGridSize(); i++){
-            for(int j = 0; j<getGridSize(); j++){
-                Pions p = getPions(i,j);
-                if(p == null){
-                    System.out.print('-');
-                }
-                else{
-                    System.out.print(p.getType());
-                }
-            }
-            System.out.println("");
-        }
         this.drawer.drawGrid(this);
     }
 
     public void checkAlignement(Position p){
-        Pions base = this.getPions(p.getX(), p.getY());
+        Pions base = null;
+        try {
+            base = this.getPions(p.getX(), p.getY());
+        } catch (OutofBounds outofBounds) {
+            outofBounds.printStackTrace();
+        }
         ArrayList<Position> alignedX = new ArrayList<>(Arrays.asList(p));
         ArrayList<Position> alignedY = new ArrayList<>(Arrays.asList(p));
         int[][] directionsX = {{-1,0}, {1,0}};
@@ -153,7 +154,12 @@ public class Grid {
         for(int[] dir : directionsX){
             for(int i = 1; p.getX()+dir[0]*i<this.gridSize && p.getX()+dir[0]*i>0; i++){
                 Position pion_pos = new Position(p.getX()+dir[0]*i, p.getY());
-                Pions pions = this.getPions(pion_pos);
+                Pions pions = null;
+                try {
+                    pions = this.getPions(pion_pos);
+                } catch (OutofBounds outofBounds) {
+                    outofBounds.printStackTrace();
+                }
                 if(pions == null || !pions.sameType(base)){
                     break;
                 }
@@ -163,7 +169,12 @@ public class Grid {
         for(int[] dir : directionsY){
             for(int i = 1; p.getY()+dir[1]*i<this.gridSize && p.getY()+dir[1]*i>0; i++){
                 Position pion_pos = new Position(p.getX(), p.getY()+dir[1]*i);
-                Pions pions = this.getPions(pion_pos);
+                Pions pions = null;
+                try {
+                    pions = this.getPions(pion_pos);
+                } catch (OutofBounds outofBounds) {
+                    outofBounds.printStackTrace();
+                }
                 if(pions == null || !pions.sameType(base)){
                     break;
                 }
@@ -180,7 +191,7 @@ public class Grid {
         }
     }
 
-    private Pions getPions(Position pion_pos) {
+    private Pions getPions(Position pion_pos) throws OutofBounds {
         return this.getPions(pion_pos.getX(), pion_pos.getY());
     }
 
@@ -189,10 +200,19 @@ public class Grid {
     }
 
     public void moove(int departX, int departY, int targetX, int targetY) throws TargetNotEmpty, NoPossiblePath {
-        Pions depart = this.getPions(departX, departY);
+        Pions depart = null;
+        try {
+            depart = this.getPions(departX, departY);
+        } catch (OutofBounds outofBounds) {
+            outofBounds.printStackTrace();
+        }
         Position lastPos = new Position(departX, departY);
-        if(this.getPions(targetX, targetY) != null){
-            throw new TargetNotEmpty();
+        try {
+            if(this.getPions(targetX, targetY) != null){
+                throw new TargetNotEmpty();
+            }
+        } catch (OutofBounds outofBounds) {
+            outofBounds.printStackTrace();
         }
 
         List<Position> path = this.aStar(new Position(departX, departY), new Position(targetX, targetY));
@@ -203,6 +223,7 @@ public class Grid {
             this.draw();
         }
         this.checkAlignement(path.get(path.size()-1));
+        this.spawnNext();
     }
 
     public static class AstarNode{
@@ -211,7 +232,7 @@ public class Grid {
         public final Position etat;
         private final Position target;
         private Grid grid;
-        private int cout;
+        private double cout;
 
         public AstarNode(Grid g, Position etat, List<AstarNode> parent, Position target){
             this.etat = etat;
@@ -219,6 +240,13 @@ public class Grid {
             this.grid = g;
             this.target = target;
             this.cout = this.getCout();
+        }
+
+        @Override
+        public String toString() {
+            return "AstarNode{" +
+                    "etat=" + etat +
+                    '}';
         }
 
         public List<Position> getPositions(){
@@ -230,11 +258,22 @@ public class Grid {
             return res;
         }
 
-        private int getCout() {
-            int distMan = 0;
-            distMan += Math.abs(etat.getX() - target.getX());
-            distMan += Math.abs(etat.getY() - target.getY());
-            return this.parent.size()+distMan;
+        private double getCout() {
+            double distMan = sqrt(pow(this.target.getX()-this.etat.getX(), 2) + pow(this.target.getY()-this.etat.getY(), 2));
+            return this.parent.size()+distMan*2.1f; // volontairement augmenté pour éviter d'avoir à tester toutes les possibilités avec un parent de même taille ( on prendra le noeud final en priorité plutot que testé les autres chemins qui ont le même nombre de parents )
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            AstarNode astarNode = (AstarNode) o;
+            return etat.equals(astarNode.etat);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(etat);
         }
 
         public List<AstarNode> getChilds(){
@@ -242,35 +281,71 @@ public class Grid {
             ArrayList<AstarNode> newParents = new ArrayList<>(parent);
             newParents.add(this);
 
-            if(grid.getPions(this.etat.getX()+1, this.etat.getY()) != null){
-                res.add(new AstarNode(this.grid, new Position(this.etat.getX() + 1, this.etat.getY()), newParents, this.target)); }
-            if(grid.getPions(this.etat.getX()-1, this.etat.getY()) != null){
-                res.add(new AstarNode(this.grid, new Position(this.etat.getX() - 1, this.etat.getY()), newParents, this.target)); }
-            if(grid.getPions(this.etat.getX(), this.etat.getY()+1) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() + 1), newParents, this.target)); }
-            if(grid.getPions(this.etat.getX(), this.etat.getY()-1) != null){ res.add(new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() - 1), newParents, this.target)); }
+            try {
+                if(grid.getPions(this.etat.getX()+1, this.etat.getY()) == null){
+                    AstarNode new_node = new AstarNode(this.grid, new Position(this.etat.getX() + 1, this.etat.getY()), newParents, this.target);
+                    if(!newParents.contains(new_node))
+                        res.add(new_node);
+                }
+            } catch (OutofBounds outofBounds) {
+                // don't care
+            }
+            try {
+                if(grid.getPions(this.etat.getX()-1, this.etat.getY()) == null){
+                    AstarNode new_node = new AstarNode(this.grid, new Position(this.etat.getX() - 1, this.etat.getY()), newParents, this.target);
+                    if(!newParents.contains(new_node))
+                        res.add(new_node);
+                }
+            } catch (OutofBounds outofBounds) {
+                // don't care
+            }
+            try {
+                if(grid.getPions(this.etat.getX(), this.etat.getY()+1) == null){
+                    AstarNode new_node = new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() + 1), newParents, this.target);
+                    if(!newParents.contains(new_node))
+                        res.add(new_node);
+                }
+            } catch (OutofBounds outofBounds) {
+                // don't care
+            }
+            try {
+                if(grid.getPions(this.etat.getX(), this.etat.getY()-1) == null){
+                    AstarNode new_node = new AstarNode(this.grid, new Position(this.etat.getX(), this.etat.getY() - 1), newParents, this.target);
+                    if(!newParents.contains(new_node))
+                        res.add(new_node);
+                }
+            } catch (OutofBounds outofBounds) {
+                // don't care
+            }
             return res;
         }
     }
     public static class AstarNodeComparator implements Comparator<AstarNode>{
         @Override
         public int compare(AstarNode first, AstarNode second) {
-            return Integer.compare(first.cout, second.cout);
+            return Double.compare(first.cout, second.cout);
         }
     }
 
     private List<Position> aStar(Position from, Position to) throws NoPossiblePath {
-        System.out.println(from);
-        System.out.println(to);
+
         AstarNode node = new AstarNode(this, from, new ArrayList<>(), to);
         ArrayList<AstarNode> file = new ArrayList<>();
+        AstarNodeComparator comparator = new AstarNodeComparator();
 
-        while(node.etat != to){
-            file.addAll(node.getChilds());
-            System.out.println(file);
+        while(!node.etat.equals(to)){
+            for( AstarNode child : node.getChilds()){
+                for(int i = 0; i<file.size()+1; i++){
+                    if (i == file.size() || comparator.compare(child, file.get(i)) <= 0){ // child a un cout inférieur = plus intéressant que other
+                        file.add(i, child);
+                        break;
+                    }
+                }
+            }
             if(file.size() == 0){
                 throw new NoPossiblePath();
             }
-            file.sort(new AstarNodeComparator());
+
             node = file.remove(0);
         }
 
