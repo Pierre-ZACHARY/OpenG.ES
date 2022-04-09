@@ -74,7 +74,6 @@ public class SpriteRenderer extends Component{
         // Disable the client state before leaving
         gl.glDisableClientState (GL10.GL_VERTEX_ARRAY);
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
     }
 
     /**

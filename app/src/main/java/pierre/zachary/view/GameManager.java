@@ -3,6 +3,8 @@ package pierre.zachary.view;
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 
+import android.graphics.Color;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,12 +38,22 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     Pions selectedPion;
 
+    TextRenderer scoreTextRenderer;
+
+    int score = 0;
+
     public GameManager(GameObject gameObject) {
         super(gameObject);
         jeu = new Facade(this, this);
         grid = jeu.Level9x9();
-
-
+        GameObject affichageScore = new GameObject(this.gameObject.scene, "Score");
+        affichageScore.transform.positionX = 0f;
+        affichageScore.transform.scaleX = 3;
+        affichageScore.transform.scaleY = 3;
+        affichageScore.transform.positionY = 5f;
+        affichageScore.transform.anchorPoint = TransformAnchorPoint.Center;
+        scoreTextRenderer = new TextRenderer(affichageScore,"SCORE : 0", Color.valueOf(Color.WHITE));
+        affichageScore.addComponent(scoreTextRenderer);
 
         for(int i = 0; i<grid.getGridSize(); i++){
             for(int j=0; j< grid.getGridSize(); j++){
@@ -78,6 +90,17 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
         grid.spawnNext();
     }
 
+    @Override
+    public void Draw(GL10 gl) {
+        if(selectedPion != null && !grid.containsPions(selectedPion)){
+            GameObject pionsGo = pionsGameObjectHashMap.get(selectedPion);
+            pionsGo.scene.remove(pionsGo);
+            selectedPion = null;
+            case_selector.scene.remove(case_selector);
+        }
+        super.Draw(gl);
+    }
+
     private int getImageRessource(Pions p){
         if(p!=null){
             switch(p.getType()){
@@ -111,18 +134,16 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     @Override
     public void drawGrid(Grid g) {
 
-
-
         float start = -(Camera.main.getSize()/2f);
 
         for(Map.Entry<Pions, GameObject> entry : pionsGameObjectHashMap.entrySet()){
             if(!g.containsPions(entry.getKey())){
                 entry.getValue().scene.remove(entry.getValue());
             }
-            else{
-                // si pas dans la scene : le remettre
-                //entry.getValue().transform.positionX+=0.1f;
-            }
+//            else{
+//                // si pas dans la scene : le remettre ?
+//                //entry.getValue().transform.positionX+=0.1f;
+//            }
         }
 
         for(int i = 0; i < grid.getGridSize(); i++){
@@ -166,11 +187,11 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     else{
                         GameObject pionsGO = pionsGameObjectHashMap.get(p);
                         pionsGO.name = "Pions "+i+":"+j;
+                        // TODO une animation de déplacement avec fonction de easing ?
                         pionsGO.transform.positionX = start+i+0.5f;
                         pionsGO.transform.positionY = start+j+0.5f;
                         pionsGO.scene.add(pionsGO);
                     }
-
                 }
             }
         }
@@ -184,6 +205,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
 
     /**
+     * UNUSED
      * @param progress : progression de l'animation entre 0 et 1
      * @return double : valeur de la courbe ( 1 -> doit être à sa position finale / 0 -> doit être à sa position initial)
      */
@@ -191,23 +213,11 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
         return 1 - cos((progress * PI) / 2);
     }
 
-    public void MoovePosition(GameObject pionsGO, float posX, float posY, long endMilli){
-        // TODO ne pas faire comme ça : calculer la position courante au moment du draw : extends la classe gameobject et avant d'appeler Transform.draw, calculer la position de l'objet à l'instant du draw
-        // Attention, sur plusieurs positions sont définis les unes après les autres, l'objet risque de passé à travers les murs : en gros il va prendre la dernière target qu'on lui a attribué à va y aller depuis sa position courante, il faut donc prendre en compte chaque target les unes après les autres pour voir le chemin parcouru normalement
 
-        long start = new Date().getTime();
-        float positionXInitiale = pionsGO.transform.positionX;
-        float positionYInitiale = pionsGO.transform.positionY;
-        while(new Date().getTime() < start+endMilli){
-            float progress = (new Date().getTime())/((start+endMilli)*1f) ;
-            pionsGO.transform.positionX = (float) (positionXInitiale+easeInSine(progress)*(posX-positionXInitiale));
-            pionsGO.transform.positionY = (float) (positionYInitiale+easeInSine(progress)*(posY-positionYInitiale));
-        }
-    }
 
     @Override
     public void drawNext(List<Pions> pionsList) {
-
+        // TODO
     }
 
     @Override
@@ -218,6 +228,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     @Override
     public void notifyScoreChanged(int addedScore) {
-
+        score += addedScore;
+        scoreTextRenderer.setText("SCORE : "+score);
     }
 }

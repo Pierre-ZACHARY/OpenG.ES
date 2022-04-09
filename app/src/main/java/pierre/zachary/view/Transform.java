@@ -59,13 +59,13 @@ public class Transform extends Component{
         float gameUnit = gameUnitX();
         switch(anchorPoint){
             case Center:
-                return -gameUnit/2f;
+                return (-gameUnit*scaleX)/2f;
             case BottomLeft:
             case TopLeft:
                 return 0f;
             case BottomRight:
             case TopRight:
-                return -gameUnit;
+                return (-gameUnit*scaleX);
         }
         return 0f;
     }
@@ -74,13 +74,13 @@ public class Transform extends Component{
         float gameUnit = gameUnitY();
         switch(anchorPoint){
             case Center:
-                return -gameUnit/2f;
+                return (-gameUnit*scaleY)/2f;
             case BottomLeft:
             case BottomRight:
                 return 0f;
             case TopLeft:
             case TopRight:
-                return -gameUnit;
+                return (-gameUnit*scaleY);
         }
         return 0f;
     }

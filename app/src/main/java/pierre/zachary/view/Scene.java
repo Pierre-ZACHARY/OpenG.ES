@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +27,6 @@ import pierre.zachary.MyGLSurfaceView;
 public abstract class Scene implements GLSurfaceView.Renderer
 {
 
-    private final MyGLSurfaceView myGLSurfaceView;
     public Context context;
     public Resources resources;
     public HashMap<Integer, Integer> images = new HashMap<> ();
@@ -32,10 +34,9 @@ public abstract class Scene implements GLSurfaceView.Renderer
     public float width;
     public float height;
 
-    public Scene(Context context, MyGLSurfaceView myGLSurfaceView)
+    public Scene(Context context)
     {
         this.context = context;
-        this.myGLSurfaceView = myGLSurfaceView;
         this.resources = context.getResources ();
     }
 
@@ -156,6 +157,21 @@ public abstract class Scene implements GLSurfaceView.Renderer
         int[] temp = new int[1];
         gl.glGenTextures (1, temp, 0);
         return temp[0];
+    }
+
+    public int loadBitmap(GL10 gl, Bitmap b){
+        int id = next (gl);
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, id);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT);
+        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, b, 0);
+        return id;
+    }
+
+    public Drawable getDrawable(int resource){
+        return AppCompatResources.getDrawable(context, resource);
     }
 
     public int loadImage (GL10 gl, int resource)
