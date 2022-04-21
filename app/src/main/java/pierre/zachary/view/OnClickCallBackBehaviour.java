@@ -8,8 +8,7 @@ public class OnClickCallBackBehaviour extends MonoBehaviour{
     Function<GameObject, String> callback;
 
 
-    public OnClickCallBackBehaviour(GameObject gameObject, Function<GameObject, String> function) {
-        super(gameObject);
+    public OnClickCallBackBehaviour(Function<GameObject, String> function) {
         this.callback = function;
     }
 

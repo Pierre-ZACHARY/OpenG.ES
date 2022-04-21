@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
-import android.util.SparseIntArray;
 import android.view.MotionEvent;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -21,12 +20,11 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pierre.zachary.MyGLSurfaceView;
-
 
 public abstract class Scene implements GLSurfaceView.Renderer
 {
 
+    public Camera mainCamera;
     public Context context;
     public Resources resources;
     public HashMap<Integer, Integer> images = new HashMap<> ();
@@ -65,16 +63,17 @@ public abstract class Scene implements GLSurfaceView.Renderer
     {
         this.width = width;
         this.height = height;
-
+        Transform.screenRatio = height/(width*1f);
+        Transform.screenWidth = width;
+        Transform.screenHeight = height;
         gl.glViewport (0, 0, width, height); // Reset The Current Viewport
         gl.glMatrixMode (GL10.GL_PROJECTION); // Select The Projection Matrix
         gl.glLoadIdentity (); // Reset The Projection Matrix
 
         if(Camera.main != null){
-            Transform.screenRatio = height/(width*1f);
-            Transform.screenWidth = Camera.main.getSize()*width;
-            Transform.screenHeight = Camera.main.getSize()*Transform.screenRatio*height;
-            gl.glOrthof (0, Transform.screenWidth, 0, Transform.screenHeight, -1f, 1f);
+            Transform.sceneWidth = Camera.main.getSize()*Transform.screenWidth;
+            Transform.sceneHeight = Camera.main.getSize()*Transform.screenRatio*Transform.screenHeight;
+            gl.glOrthof (0, Transform.sceneWidth, 0, Transform.sceneHeight, -1f, 1f);
         }
         else{
             gl.glOrthof (0, width, 0, height, -1f, 1f);
@@ -126,9 +125,9 @@ public abstract class Scene implements GLSurfaceView.Renderer
 
     public void init (GL10 gl)
     {
-        for(GameObject g : new ArrayList<>(gameObjectList)){
-            g.Start();
-        }
+//        for(GameObject g : new ArrayList<>(gameObjectList)){
+//            g.Start();
+//        }
     }
 
     public void load (GL10 gl)
@@ -147,6 +146,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
     }
 
     public void onTouchEvent(MotionEvent e){
+
         for (GameObject gameObject : new ArrayList<>(gameObjectList)) {
             gameObject.OnTouchEvent(e);
         }

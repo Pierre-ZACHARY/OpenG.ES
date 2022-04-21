@@ -22,7 +22,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import pierre.zachary.view.MainScene;
+import pierre.zachary.view.MenuScene;
 import pierre.zachary.view.Scene;
+import pierre.zachary.view.SceneDispatcher;
 
 /* La classe MyGLSurfaceView avec en particulier la gestion des événements
   et la création de l'objet renderer
@@ -37,7 +39,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
     /* Un attribut : le renderer (GLSurfaceView.Renderer est une interface générique disponible) */
     /* MyGLRenderer va implémenter les méthodes de cette interface */
 
-    private Scene mRenderer;
+    public SceneDispatcher dispatcher;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -47,17 +49,14 @@ public class MyGLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(1);
 
         // Création du renderer qui va être lié au conteneur View créé
-        mRenderer = new MainScene(context);
-        setRenderer(mRenderer);
+        dispatcher = new SceneDispatcher(context);
+        setRenderer(dispatcher);
 
         // Option pour indiquer qu'on redessine uniquement si les données changent
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
     }
 
-    public void redraw(){
-        requestRender();
-    }
 
     /* pour gérer la translation */
     private float mPreviousX;
@@ -68,7 +67,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         // Les coordonnées du point touché sur l'écran
-        mRenderer.onTouchEvent(e);
+        dispatcher.onTouchEvent(e);
         return true;
     }
 

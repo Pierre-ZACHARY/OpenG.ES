@@ -20,8 +20,7 @@ public class SpriteRenderer extends Component{
     });
 
 
-    public SpriteRenderer(GameObject gameObject, int ressourceId) {
-        super(gameObject);
+    public SpriteRenderer(int ressourceId) {
         this.ressourceId = ressourceId;
 
     }

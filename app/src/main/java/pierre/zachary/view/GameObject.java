@@ -20,7 +20,7 @@ public class GameObject {
     public GameObject(Scene scene){
         this.scene = scene;
         componentList = new ArrayList<>();
-        transform = new Transform(this);
+        transform = new Transform();
         name = "GameObject : "+counter;
         counter+=1;
         scene.add(this);
@@ -40,7 +40,18 @@ public class GameObject {
     }
 
     public void addComponent(Component e){
+        e.gameObject = this;
         componentList.add(e);
+        e.Start();
+    }
+
+    public <T extends Component> Component getComponent(Class<T> whatclass){
+        for(Component c : componentList){
+            if(whatclass.isInstance(c)){
+                return c;
+            }
+        }
+        return null;
     }
 
     public void Start(){
@@ -55,7 +66,7 @@ public class GameObject {
         }
     }
 
-    public void Draw(GL10 gl){ // TODO rename en draw
+    public void Draw(GL10 gl){
         gl.glPushMatrix();
 
         transform.Draw(gl);

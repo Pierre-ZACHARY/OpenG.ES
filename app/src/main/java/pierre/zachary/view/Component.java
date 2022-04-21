@@ -6,11 +6,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 public abstract class Component {
 
-    GameObject gameObject;
+    GameObject gameObject = null;
 
-    public Component(GameObject gameObject){
-        this.gameObject = gameObject;
-    }
 
     public void Draw(GL10 gl) {
 

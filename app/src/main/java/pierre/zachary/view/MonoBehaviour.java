@@ -3,10 +3,6 @@ package pierre.zachary.view;
 public class MonoBehaviour extends Component{
 
 
-    public MonoBehaviour(GameObject gameObject) {
-        super(gameObject);
-    }
-
     public void Start(){
 
     }

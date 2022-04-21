@@ -9,17 +9,14 @@ enum TransformAnchorPoint{
 
 public class Transform extends Component{
 
-    public static float screenWidth;
-    public static float screenHeight;
+    public static float sceneWidth;
+    public static float sceneHeight;
     public static float screenRatio;
+    public static int screenWidth;
+    public static int screenHeight;
 
-    public static void setScreenDim(int width, int height){
-        screenHeight = height;
-        screenWidth = width;
-    }
 
-    public Transform(GameObject gameObject) {
-        super(gameObject);
+    public Transform() {
         this.positionX = 0f;
         this.positionY = 0f;
         this.positionZ = 0f;
@@ -47,11 +44,11 @@ public class Transform extends Component{
     }
 
     public static float gameUnitX(){
-        return screenWidth/Camera.main.getSize();
+        return sceneWidth /Camera.main.getSize();
     }
 
     public static float gameUnitY(){
-        return (screenHeight/Camera.main.getSize())/screenRatio;
+        return (sceneHeight /Camera.main.getSize())/screenRatio;
     }
 
     public TransformAnchorPoint anchorPoint;
@@ -86,14 +83,14 @@ public class Transform extends Component{
     }
 
     public float ScreenPositionX(){
-        return (screenWidth/2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
+        return (sceneWidth /2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
                 + (positionX*Transform.gameUnitX())/Camera.main.getSize()  // position de l'objet
                 + (getAnchorPointX())/Camera.main.getSize() // point d'ancrage
                 + ((scaleX*Transform.gameUnitX())/Camera.main.getSize())/2f; // scale (on prend le milieu de l'objet)
     }
 
     public float ScreenPositionY(){
-        return ((screenHeight/2f)/Camera.main.getSize())/screenRatio
+        return ((sceneHeight /2f)/Camera.main.getSize())/screenRatio
                 - ((positionY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio
                 - ((getAnchorPointY())/Camera.main.getSize())/Transform.screenRatio
                 - (((scaleY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio)/2f;
@@ -109,8 +106,8 @@ public class Transform extends Component{
         gl.glRotatef (rotationX, 1f, 0f, 0f); // ROTATION X
 
 
-        float xStartingPoint = screenWidth/2f; // le milieu de l'écran
-        float yStartingPoint = screenHeight/2f; // le milieu de l'écran
+        float xStartingPoint = sceneWidth /2f; // le milieu de l'écran
+        float yStartingPoint = sceneHeight /2f; // le milieu de l'écran
 
         gl.glTranslatef (xStartingPoint+getAnchorPointX()+positionX*gameUnitX(), yStartingPoint+getAnchorPointY()+positionY*gameUnitY(), 0f); // TRANSLATION
 

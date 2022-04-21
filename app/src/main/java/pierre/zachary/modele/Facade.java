@@ -6,7 +6,7 @@ import pierre.zachary.modele.exception.TargetNotEmpty;
 
 public class Facade {
 
-    private static Grid g;
+    private Grid g;
     private final Drawer drawer;
     private final Score score;
 

@@ -11,6 +11,7 @@ public class Camera{
         this.size = size;
         if(isMainCamera){
             main = this;
+           
         }
     }
 

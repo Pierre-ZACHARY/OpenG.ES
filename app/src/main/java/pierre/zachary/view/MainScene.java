@@ -10,19 +10,20 @@ import pierre.zachary.R;
 import pierre.zachary.modele.Facade;
 
 public class MainScene extends Scene {
-    //Square square1, square2;
-    Camera mainCam;
-    GameObject gameManager, imageGO;
+    GameObject gameManager;
 
-    Facade gameFacade;
-
-    public MainScene(Context context) {
+    public MainScene(Context context, int level) {
         super(context);
-        mainCam = new Camera( 9, true);
-
+        switch (level){
+            default:
+                mainCamera = new Camera( 9, true);
+                break;
+            case 2:
+                mainCamera = new Camera( 7, true);
+                break;
+        }
 
         gameManager = new GameObject(this, "Game Manager");
-        gameManager.addComponent(new GameManager(gameManager));
-
+        gameManager.addComponent(new GameManager(level));
     }
 }

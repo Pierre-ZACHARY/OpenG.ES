@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import pierre.zachary.modele.exception.NoPossiblePath;
 import pierre.zachary.modele.exception.OutofBounds;
@@ -28,6 +29,7 @@ public class Grid {
 
     private int gridSize = 9;
     private int pionsAligne = 5;
+    private int nombreDePions = 7;
     private ArrayList<Pions> grid;
     private ArrayList<Pions> next;
 
@@ -39,10 +41,12 @@ public class Grid {
             case 0:
                 this.gridSize = 9;
                 this.pionsAligne = 5;
+                this.nombreDePions = 7;
                 break;
             case 1:
                 this.gridSize = 7;
                 this.pionsAligne = 4;
+                this.nombreDePions = 5;
         }
         this.grid = new ArrayList<Pions>(this.gridSize*this.gridSize);
         for(int i = 0; i<getGridSize()*getGridSize();i++){
@@ -81,7 +85,7 @@ public class Grid {
     }
 
     private Pions randomPions(){
-        int rand = new Random().nextInt(7);
+        int rand = new Random().nextInt(this.nombreDePions);
         return new Pions(rand);
     }
 
@@ -221,6 +225,8 @@ public class Grid {
             this.setPions(null, lastPos);
             lastPos = p;
             this.draw();
+
+
         }
         this.checkAlignement(path.get(path.size()-1));
         this.spawnNext();

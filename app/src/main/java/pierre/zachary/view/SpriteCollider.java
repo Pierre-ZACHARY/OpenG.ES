@@ -5,8 +5,9 @@ import android.view.MotionEvent;
 public class SpriteCollider extends Component{
 
     SpriteRenderer renderer;
-    public SpriteCollider(GameObject gameObject){
-        super(gameObject);
+
+    @Override
+    public void Start(){
         for(Component c : this.gameObject.componentList){
             if(c instanceof SpriteRenderer){
                 renderer =(SpriteRenderer) c;
