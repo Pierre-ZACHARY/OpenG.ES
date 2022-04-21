@@ -184,7 +184,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 if(p!=null){
                     if(!pionsGameObjectHashMap.containsKey(p)){ // déplacement d'un nouveau pion
                         GameObject pionsGO = nextPionsHashMap.get(p);
-                        if(pionsGO==null){
+                        if(pionsGO==null){ // possible car lors de la création de la grid, le premier drawnext n'est pas effectuer ( la grid est encore à null sur le game manager et donc pas de drawnext ici )
                             pionsGO = new GameObject(this.gameObject.scene);
                             pionsGO.name = "Pions "+i+":"+j;
                             System.out.println("Création : "+pionsGO);
@@ -235,7 +235,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
         }
         if(selectedPion != null && !grid.containsPions(selectedPion)){
             GameObject pionsGo = pionsGameObjectHashMap.get(selectedPion);
-            pionsGo.scene.remove(pionsGo); // null ?
+            pionsGo.scene.remove(pionsGo); // TODO null ?
             selectedPion = null;
             case_selector.scene.remove(case_selector);
         }
@@ -261,7 +261,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 GameObject nextPionGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
                 nextPionGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
                 nextPionGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
-                nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
+                nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p))); // TODO pions qui se supperposent ?...
                 nextPionsHashMap.put(p, nextPionGO);
 
             }
