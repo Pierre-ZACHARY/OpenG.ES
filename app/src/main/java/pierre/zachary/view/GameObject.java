@@ -5,19 +5,37 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.microedition.khronos.opengles.GL10;
 
 public class GameObject {
 
+    private static int global_id = 0;
+    private int id;
     Scene scene;
     String name;
     Transform transform;
     ArrayList<Component> componentList;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameObject that = (GameObject) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     private static int counter = 0;
 
     public GameObject(Scene scene){
+        id = global_id;
+        global_id++;
         this.scene = scene;
         componentList = new ArrayList<>();
         transform = new Transform();
@@ -45,6 +63,10 @@ public class GameObject {
         e.Start();
     }
 
+    public void removeComponent(Component e){
+        componentList.remove(e);
+    }
+
     public <T extends Component> Component getComponent(Class<T> whatclass){
         for(Component c : componentList){
             if(whatclass.isInstance(c)){
@@ -67,6 +89,8 @@ public class GameObject {
     }
 
     public void Draw(GL10 gl){
+        Update();
+
         gl.glPushMatrix();
 
         transform.Draw(gl);

@@ -114,6 +114,10 @@ public abstract class Scene implements GLSurfaceView.Renderer
             gameObjectList.add(gameObject);
     }
 
+    public void removeAllWithName(String contain){
+        gameObjectList.removeIf(g -> g.name.contains(contain));
+    }
+
     public void remove(GameObject gameObject){
         gameObjectList.remove(gameObject);
     }

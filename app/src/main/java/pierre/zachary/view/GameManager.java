@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -182,16 +183,44 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 }
 
                 if(p!=null){
-                    if(!pionsGameObjectHashMap.containsKey(p)){ // déplacement d'un nouveau pion
+                    if(nextPionsHashMap.containsKey(p)){
                         GameObject pionsGO = nextPionsHashMap.get(p);
-                        if(pionsGO==null){ // possible car lors de la création de la grid, le premier drawnext n'est pas effectuer ( la grid est encore à null sur le game manager et donc pas de drawnext ici )
-                            pionsGO = new GameObject(this.gameObject.scene);
-                            pionsGO.name = "Pions "+i+":"+j;
-                            System.out.println("Création : "+pionsGO);
-                            pionsGO.transform.positionX = start+i+0.5f;
-                            pionsGO.transform.positionY = start+j+0.5f;
-                            pionsGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
-                        }
+                        pionsGO.name = "Pions "+i+":"+j;
+                        Animator anim = new Animator();
+                        pionsGO.addComponent(anim);
+                        anim.addAnim(new TransformAnimation(pionsGO, start+i+0.5f, start+j+0.5f));
+
+                        pionsGO.addComponent(new SpriteCollider());
+                        pionsGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
+                            @Override
+                            public String apply(GameObject gameObject) {
+                                Pions p = getPions(gameObject);
+                                if(p!=null){
+                                    selectedPion = p;
+                                    if(case_selector!=null){
+                                        case_selector.scene.remove(case_selector);
+                                    }
+                                    case_selector = new GameObject(gameObject.scene, "Case selector");
+                                    case_selector.addComponent(new SpriteRenderer(R.drawable.case_select));
+                                    case_selector.addComponent(new SpriteCollider());
+                                    case_selector.transform.positionX = gameObject.transform.positionX;
+                                    case_selector.transform.positionY = gameObject.transform.positionY;
+                                }
+
+                                return null;
+                            }}));
+                        pionsGameObjectHashMap.put(p, pionsGO);
+                        System.out.println(pionsGO.scene);
+                        nextPionsHashMap.remove(p);
+                    }
+                    else if(!pionsGameObjectHashMap.containsKey(p)){ // déplacement d'un nouveau pion
+                        GameObject pionsGO = new GameObject(this.gameObject.scene);
+                        pionsGO.name = "Pions "+i+":"+j;
+                        pionsGO.transform.positionX = start+i+0.5f;
+                        pionsGO.transform.positionY = start+j+0.5f;
+                        pionsGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
+
+
                         pionsGO.scene.add(pionsGO);
                         pionsGO.addComponent(new SpriteCollider());
                         pionsGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
@@ -212,7 +241,6 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
                                 return null;
                             }}));
-                        nextPionsHashMap.remove(p);
                         pionsGameObjectHashMap.put(p, pionsGO);
                     }
                     else{
@@ -221,11 +249,16 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         assert pionsGO != null;
 
                         if(!pionsGO.name.equals("Pions " + i + ":" + j)){
-                            // TODO une animation de déplacement avec fonction de easing ?
                             System.out.println("Moving : "+pionsGO+" to "+i+", "+j);
                             pionsGO.name = "Pions "+i+":"+j;
-                            pionsGO.transform.positionX = start+i+0.5f;
-                            pionsGO.transform.positionY = start+j+0.5f;
+
+                            Animator anim =(Animator) pionsGO.getComponent(Animator.class);
+                            if(anim == null){
+                                anim = new Animator();
+                                pionsGO.addComponent(anim);
+                            }
+                            anim.addAnim(new TransformAnimation(pionsGO, 100, start+i+0.5f, start+j+0.5f));
+                            // TODO : attendre que ça ai fini de bouger avant de : regarder si ils sont alignés / spawn les next
                         }
                         pionsGO.scene.add(pionsGO);
 
@@ -242,27 +275,21 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     }
 
 
-    /**
-     * UNUSED
-     * @param progress : progression de l'animation entre 0 et 1
-     * @return double : valeur de la courbe ( 1 -> doit être à sa position finale / 0 -> doit être à sa position initial)
-     */
-    public double easeInSine(float progress){
-        return 1 - cos((progress * PI) / 2);
-    }
-
-
     @Override
     public void drawNext(List<Pions> pionsList) {
+
         if(grid!=null){
             for(int k = 0; k<pionsList.size(); k++){
                 Pions p = pionsList.get(k);
 
-                GameObject nextPionGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
-                nextPionGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
-                nextPionGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
-                nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p))); // TODO pions qui se supperposent ?...
-                nextPionsHashMap.put(p, nextPionGO);
+                if(!nextPionsHashMap.containsKey(p)){
+                    GameObject nextPionGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
+                    nextPionGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
+                    nextPionGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
+                    nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p))); // TODO pions qui se supperposent ?...
+                    nextPionsHashMap.put(p, nextPionGO);
+                }
+
 
             }
         }
