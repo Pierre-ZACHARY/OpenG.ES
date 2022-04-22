@@ -1,16 +1,11 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.scripts;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.Preference;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,6 +23,15 @@ import pierre.zachary.modele.exception.NoPossiblePath;
 import pierre.zachary.modele.exception.OutofBounds;
 import pierre.zachary.modele.exception.PionsNotInGrid;
 import pierre.zachary.modele.exception.TargetNotEmpty;
+import pierre.zachary.view.Camera;
+import pierre.zachary.view.GameObject;
+import pierre.zachary.view.component.renderer.collider.SpriteCollider;
+import pierre.zachary.view.component.TransformAnchorPoint;
+import pierre.zachary.view.component.renderer.SpriteRenderer;
+import pierre.zachary.view.component.renderer.TextRenderer;
+import pierre.zachary.view.component.renderer.TextSize;
+import pierre.zachary.view.scene.SceneDispatcher;
+import pierre.zachary.view.scene.SceneName;
 
 public class GameManager extends MonoBehaviour implements Score, Drawer {
 
@@ -97,7 +101,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
         titreNiveau.transform.scaleY = 5;
         titreNiveau.transform.positionY = ((int) (grid.getGridSize()/2))+2;
         titreNiveau.transform.anchorPoint = TransformAnchorPoint.Center;
-        TextRenderer niveauTexteRenderer = new TextRenderer("Niveau "+level, Color.valueOf(Color.WHITE), TextSize.Title);
+        TextRenderer niveauTexteRenderer = new TextRenderer("Niveau "+level, Color.valueOf(Color.WHITE), TextSize.Title, this.gameObject.scene.getFont(R.font.luckiestguy));
         titreNiveau.addComponent(niveauTexteRenderer);
 
         GameObject affichageScore = new GameObject(this.gameObject.scene, "Score");
@@ -121,6 +125,14 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     @Override
     public void Draw(GL10 gl) {
+
+        if(actionsList.size()>0){
+            if(animEnded()){
+                Function<String, String> action = actionsList.get(0);
+                actionsList.remove(0);
+                action.apply("");
+            }
+        }
 
         if(selectedPion != null && !grid.containsPions(selectedPion)){
             GameObject pionsGo = pionsGameObjectHashMap.get(selectedPion);
@@ -162,6 +174,19 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
         return null;
     }
 
+    private List<Animator> animators = new ArrayList<>();
+
+    public Boolean animEnded(){
+        for(Animator a : animators){
+            if(!a.Ended()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
     @Override
     public void drawGrid(Grid g) {
 
@@ -187,6 +212,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         GameObject pionsGO = nextPionsHashMap.get(p);
                         pionsGO.name = "Pions "+i+":"+j;
                         Animator anim = new Animator();
+                        animators.add(anim);
                         pionsGO.addComponent(anim);
                         anim.addAnim(new TransformAnimation(pionsGO, start+i+0.5f, start+j+0.5f));
 
@@ -255,6 +281,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                             Animator anim =(Animator) pionsGO.getComponent(Animator.class);
                             if(anim == null){
                                 anim = new Animator();
+                                animators.add(anim);
                                 pionsGO.addComponent(anim);
                             }
                             anim.addAnim(new TransformAnimation(pionsGO, 100, start+i+0.5f, start+j+0.5f));
@@ -286,7 +313,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     GameObject nextPionGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
                     nextPionGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
                     nextPionGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
-                    nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p))); // TODO pions qui se supperposent ?...
+                    nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
                     nextPionsHashMap.put(p, nextPionGO);
                 }
 
@@ -299,7 +326,23 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     @Override
     public void gameOver(Grid g) {
         System.out.println("GAME OVER");
-        // TODO
+        SharedPreferences pref = this.gameObject.scene.getPrefs();
+        int best = pref.getInt("BestScore", 0);
+
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("Score", score);
+        if(score>best){
+            editor.putInt("BestScore", score);
+        }
+        editor.apply();
+        SceneDispatcher.getInstance().loadScene(SceneName.End);
+    }
+
+    private List<Function<String, String>> actionsList = new ArrayList<>();
+
+    @Override
+    public void addCallbackAction(Function<String, String> callback) {
+        actionsList.add(callback);
     }
 
     @Override

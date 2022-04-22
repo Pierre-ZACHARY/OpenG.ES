@@ -1,8 +1,8 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.scripts;
 
 import java.util.function.Function;
 
-import pierre.zachary.R;
+import pierre.zachary.view.GameObject;
 
 public class OnClickCallBackBehaviour extends MonoBehaviour{
     Function<GameObject, String> callback;

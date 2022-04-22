@@ -1,4 +1,4 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.scripts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,10 @@ public class Animator extends MonoBehaviour{
 
     public void addAnim(TransformAnimation animation){
         animations.add(animation);
+    }
+
+    public Boolean Ended(){
+        return animations.size() == 0;
     }
 
     @Override

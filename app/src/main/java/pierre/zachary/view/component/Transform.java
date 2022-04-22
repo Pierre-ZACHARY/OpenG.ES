@@ -1,13 +1,11 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import pierre.zachary.view.Camera;
 
-enum TransformAnchorPoint{
-    Center, BottomLeft, BottomRight, TopLeft, TopRight
-}
 
-public class Transform extends Component{
+public class Transform extends Component {
 
     public static float sceneWidth;
     public static float sceneHeight;

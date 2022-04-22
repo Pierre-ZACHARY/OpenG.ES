@@ -9,14 +9,19 @@ import java.util.Objects;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import pierre.zachary.view.component.Component;
+import pierre.zachary.view.component.Transform;
+import pierre.zachary.view.component.scripts.MonoBehaviour;
+import pierre.zachary.view.scene.Scene;
+
 public class GameObject {
 
     private static int global_id = 0;
     private int id;
-    Scene scene;
-    String name;
-    Transform transform;
-    ArrayList<Component> componentList;
+    public Scene scene;
+    public String name;
+    public Transform transform;
+    public ArrayList<Component> componentList;
 
     @Override
     public boolean equals(Object o) {

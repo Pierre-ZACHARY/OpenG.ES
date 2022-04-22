@@ -1,8 +1,12 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.renderer.collider;
 
 import android.view.MotionEvent;
 
-public class SpriteCollider extends Component{
+import pierre.zachary.view.component.Component;
+import pierre.zachary.view.component.renderer.SpriteRenderer;
+import pierre.zachary.view.component.scripts.MonoBehaviour;
+
+public class SpriteCollider extends Component {
 
     SpriteRenderer renderer;
 

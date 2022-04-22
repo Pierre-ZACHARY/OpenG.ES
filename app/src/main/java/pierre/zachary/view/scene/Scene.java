@@ -1,15 +1,19 @@
-package pierre.zachary.view;
+package pierre.zachary.view.scene;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.view.MotionEvent;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import pierre.zachary.R;
+import pierre.zachary.view.Camera;
+import pierre.zachary.view.GameObject;
+import pierre.zachary.view.component.Transform;
 
 
 public abstract class Scene implements GLSurfaceView.Renderer
@@ -66,7 +75,10 @@ public abstract class Scene implements GLSurfaceView.Renderer
         Transform.screenRatio = height/(width*1f);
         Transform.screenWidth = width;
         Transform.screenHeight = height;
+
+
         gl.glViewport (0, 0, width, height); // Reset The Current Viewport
+        //GLES30.glViewport(0,0, width, height);
         gl.glMatrixMode (GL10.GL_PROJECTION); // Select The Projection Matrix
         gl.glLoadIdentity (); // Reset The Projection Matrix
 
@@ -134,6 +146,15 @@ public abstract class Scene implements GLSurfaceView.Renderer
 //        }
     }
 
+    public void Start(){
+
+    }
+
+    public void resetScene(){
+        gameObjectList.clear();
+        Start();
+    }
+
     public void load (GL10 gl)
     {
         for(GameObject g : new ArrayList<>(gameObjectList)){
@@ -166,6 +187,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
     public int loadBitmap(GL10 gl, Bitmap b){
         int id = next (gl);
         gl.glBindTexture(GL10.GL_TEXTURE_2D, id);
+        //GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, id);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT);
@@ -176,6 +198,14 @@ public abstract class Scene implements GLSurfaceView.Renderer
 
     public Drawable getDrawable(int resource){
         return AppCompatResources.getDrawable(context, resource);
+    }
+
+    public Typeface getFont(int resource){
+        return ResourcesCompat.getFont(context, resource);
+    }
+
+    public SharedPreferences getPrefs(){
+        return context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
     }
 
     public int loadImage (GL10 gl, int resource)

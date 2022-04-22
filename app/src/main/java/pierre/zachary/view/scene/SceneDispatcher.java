@@ -1,4 +1,4 @@
-package pierre.zachary.view;
+package pierre.zachary.view.scene;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -6,10 +6,6 @@ import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-enum SceneName{
-    Menu, Level1, Level2, End
-}
 
 
 public class SceneDispatcher  implements GLSurfaceView.Renderer{
@@ -25,6 +21,7 @@ public class SceneDispatcher  implements GLSurfaceView.Renderer{
     private Scene level1Scene;
     private Scene level2Scene;
     private Scene menuScene;
+    private EndScene endScene;
     private SceneName toBeLoaded;
 
     public SceneDispatcher(Context context){
@@ -32,6 +29,7 @@ public class SceneDispatcher  implements GLSurfaceView.Renderer{
         menuScene = new MenuScene(context);
         level1Scene = new MainScene(context, 1);
         level2Scene = new MainScene(context, 2);
+        endScene = new EndScene(context);
 
         setCurrentScene(SceneName.Menu);
     }
@@ -39,14 +37,20 @@ public class SceneDispatcher  implements GLSurfaceView.Renderer{
     private void setCurrentScene(SceneName name){
         switch (name){
             case Level1:
+                endScene.lastLevel = name;
                 currentScene = level1Scene;
                 break;
             case Level2:
+                endScene.lastLevel = name;
                 currentScene = level2Scene;
+                break;
+            case End:
+                currentScene = endScene;
                 break;
             default:
                 currentScene = menuScene;
         }
+        currentScene.resetScene();
         currentScene.mainCamera.setMainCamera();
     }
 

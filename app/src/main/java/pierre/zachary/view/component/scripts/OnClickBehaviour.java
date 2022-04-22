@@ -1,4 +1,4 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.scripts;
 
 public class OnClickBehaviour extends MonoBehaviour{
 

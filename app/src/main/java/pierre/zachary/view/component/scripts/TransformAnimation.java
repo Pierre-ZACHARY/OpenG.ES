@@ -1,4 +1,4 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.scripts;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -9,6 +9,8 @@ import java.time.Clock;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
+
+import pierre.zachary.view.GameObject;
 
 public class TransformAnimation{
 

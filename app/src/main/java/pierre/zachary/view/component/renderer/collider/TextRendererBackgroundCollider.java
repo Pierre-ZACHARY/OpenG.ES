@@ -1,6 +1,10 @@
-package pierre.zachary.view;
+package pierre.zachary.view.component.renderer.collider;
 
 import android.view.MotionEvent;
+
+import pierre.zachary.view.component.Component;
+import pierre.zachary.view.component.renderer.TextRenderer;
+import pierre.zachary.view.component.scripts.MonoBehaviour;
 
 public class TextRendererBackgroundCollider extends Component {
 

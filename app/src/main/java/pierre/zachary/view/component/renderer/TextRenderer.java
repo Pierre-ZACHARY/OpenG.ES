@@ -1,22 +1,19 @@
-package pierre.zachary.view;
-
-import static java.lang.Math.floor;
+package pierre.zachary.view.component.renderer;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pierre.zachary.R;
+import pierre.zachary.view.Camera;
+import pierre.zachary.view.component.Component;
+import pierre.zachary.view.component.Transform;
 
-enum TextSize{
-    Title, SubTitle, Hint
-}
-
-public class TextRenderer  extends Component{
+public class TextRenderer  extends Component {
 
     private final Canvas canvas;
     private final Bitmap bitmap;
@@ -57,7 +54,7 @@ public class TextRenderer  extends Component{
         }
     }
 
-    public TextRenderer(String text, Color textColor, TextSize textSize ) {
+    public TextRenderer(String text, Color textColor, TextSize textSize, Typeface font) {
         this.text = text;
         // Create an empty, mutable bitmap
         bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.ARGB_4444);
@@ -71,9 +68,16 @@ public class TextRenderer  extends Component{
         textPaint.setTextSize(getSize(textSize));
         textPaint.setAntiAlias(true);
         textPaint.setColor(textColor.toArgb());
+        if(font!=null){
+            textPaint.setTypeface(font);
+        }
         //textPaint.setARGB(0xff, 0x00, 0x00, 0x00);
         // draw the text centered
         textPaint.setTextAlign(Paint.Align.CENTER);
+    }
+
+    public TextRenderer(String text, Color textColor, TextSize textSize ) {
+        this(text, textColor, textSize, null);
     }
 
     public TextRenderer(String text, Color textColor){
@@ -150,7 +154,7 @@ public class TextRenderer  extends Component{
         float centerY = t.ScreenPositionY();
 
         // on fait tout ça pour trouver la position du clic sur le sprite
-        float rendererScreenWidth = (t.scaleX/Camera.main.getSize())*Transform.gameUnitX();
+        float rendererScreenWidth = (t.scaleX/ Camera.main.getSize())*Transform.gameUnitX();
         float startScreenX = centerX - rendererScreenWidth/2f;
         float endScreenX = centerX + rendererScreenWidth/2f;
         float startScreenY = centerY - rendererScreenWidth/2f;

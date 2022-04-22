@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import pierre.zachary.modele.exception.NoPossiblePath;
 import pierre.zachary.modele.exception.OutofBounds;
@@ -129,6 +130,10 @@ public class Grid {
         this.draw();
         this.populateNext();
         this.drawer.drawNext(this.next);
+        List<Position> vide = this.getVide();
+        if(vide.size() == 0){
+            this.drawer.gameOver(this);
+        }
     }
 
     public void removeAllPositions(List<Position> listPos){
@@ -225,11 +230,16 @@ public class Grid {
             this.setPions(null, lastPos);
             lastPos = p;
             this.draw();
-
-
         }
-        this.checkAlignement(path.get(path.size()-1));
-        this.spawnNext();
+        this.drawer.addCallbackAction(new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                checkAlignement(path.get(path.size()-1));
+                spawnNext();
+                return null;
+            }
+        });
+
     }
 
     public static class AstarNode{

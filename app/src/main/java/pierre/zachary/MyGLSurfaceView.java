@@ -18,13 +18,9 @@ package pierre.zachary;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import pierre.zachary.view.MainScene;
-import pierre.zachary.view.MenuScene;
-import pierre.zachary.view.Scene;
-import pierre.zachary.view.SceneDispatcher;
+import pierre.zachary.view.scene.SceneDispatcher;
 
 /* La classe MyGLSurfaceView avec en particulier la gestion des événements
   et la création de l'objet renderer
