@@ -154,10 +154,10 @@ public class TextRenderer  extends Component {
         float centerY = t.ScreenPositionY();
 
         // on fait tout ça pour trouver la position du clic sur le sprite
-        float rendererScreenWidth = (t.scaleX/ Camera.main.getSize())*Transform.gameUnitX();
+        float rendererScreenWidth = t.renderedScreenWidth();
         float startScreenX = centerX - rendererScreenWidth/2f;
         float endScreenX = centerX + rendererScreenWidth/2f;
-        float startScreenY = centerY - rendererScreenWidth/2f;
+        float startScreenY = centerY - rendererScreenWidth/2f; // car c'est un carré
         float endScreenY = centerY + rendererScreenWidth/2f;
         if(x >=startScreenX && x < endScreenX && y >= startScreenY && y<endScreenY){
             int pixelX = (int) (((x-startScreenX)/(rendererScreenWidth))*512);

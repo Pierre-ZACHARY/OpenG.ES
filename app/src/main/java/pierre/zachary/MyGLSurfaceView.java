@@ -45,7 +45,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(1);
 
         // Création du renderer qui va être lié au conteneur View créé
-        dispatcher = new SceneDispatcher(context);
+        dispatcher = SceneDispatcher.getInstance(context);
         setRenderer(dispatcher);
 
         // Option pour indiquer qu'on redessine uniquement si les données changent

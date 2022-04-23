@@ -12,26 +12,33 @@ public class SceneDispatcher  implements GLSurfaceView.Renderer{
 
     private static SceneDispatcher instance;
 
+    public static SceneDispatcher getInstance(Context context){
+        if(instance == null){
+            instance = new SceneDispatcher(context);
+        }
+        return  instance;
+    }
+
     public static SceneDispatcher getInstance(){
         return  instance;
     }
 
 
     private Scene currentScene;
-    private Scene level1Scene;
-    private Scene level2Scene;
-    private Scene menuScene;
-    private EndScene endScene;
+    private final Scene level1Scene;
+    private final Scene level2Scene;
+    private final Scene menuScene;
+    private final EndScene endScene;
     private SceneName toBeLoaded;
 
-    public SceneDispatcher(Context context){
+    private SceneDispatcher(Context context){
         instance = this;
         menuScene = new MenuScene(context);
         level1Scene = new MainScene(context, 1);
         level2Scene = new MainScene(context, 2);
         endScene = new EndScene(context);
 
-        setCurrentScene(SceneName.Level1);
+        setCurrentScene(SceneName.Menu);
     }
 
     private void setCurrentScene(SceneName name){

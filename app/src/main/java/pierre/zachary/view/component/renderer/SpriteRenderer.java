@@ -89,9 +89,14 @@ public class SpriteRenderer extends Component {
         Transform t = this.gameObject.transform;
         float centerX = t.ScreenPositionX(); // position au centre de l'objet en X
         float centerY = t.ScreenPositionY();
-        boolean xInside = x<centerX+(Transform.gameUnitX()/ Camera.main.getSize())/2f
-                && x>centerX-(Transform.gameUnitX()/Camera.main.getSize())/2f;
-        boolean yInside = y<centerY+(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f && y>centerY-(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f;
+        float rendererScreenWidth = t.renderedScreenWidth();
+        float startScreenX = centerX - rendererScreenWidth/2f;
+        float endScreenX = centerX + rendererScreenWidth/2f;
+        float startScreenY = centerY - rendererScreenWidth/2f; // car c'est un carré
+        float endScreenY = centerY + rendererScreenWidth/2f;
+
+        boolean xInside = x<endScreenX && x>startScreenX;
+        boolean yInside = y<endScreenY && y>startScreenY;
         return xInside && yInside;
     }
 }

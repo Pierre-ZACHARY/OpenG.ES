@@ -109,6 +109,13 @@ public class Transform extends Component {
         return 0f;
     }
 
+    public float renderedScreenWidth(){
+        if(landScapeMode()){
+            return (scaleX*landscapeTransform.mulScaleX*Transform.gameUnitX()+landscapeTransform.addScaleX*Transform.gameUnitX()/ Camera.main.getSize());
+        }
+        return (scaleX*Transform.gameUnitX()/ Camera.main.getSize());
+    }
+
     public float ScreenPositionX(){
         if(landScapeMode()){
             return (sceneWidth /2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
