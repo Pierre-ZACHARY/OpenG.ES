@@ -31,7 +31,7 @@ public class SceneDispatcher  implements GLSurfaceView.Renderer{
         level2Scene = new MainScene(context, 2);
         endScene = new EndScene(context);
 
-        setCurrentScene(SceneName.Menu);
+        setCurrentScene(SceneName.Level1);
     }
 
     private void setCurrentScene(SceneName name){

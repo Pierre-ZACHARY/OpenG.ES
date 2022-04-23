@@ -9,10 +9,25 @@ public class Transform extends Component {
 
     public static float sceneWidth;
     public static float sceneHeight;
-    public static float screenRatio;
+    public static float screenRatio; // height/width
     public static int screenWidth;
     public static int screenHeight;
 
+    public static boolean landScapeMode(){
+        return screenRatio<1f;
+    }
+
+    public static float landScapeModeScreenRatio(){
+        if(landScapeMode()){
+            return screenRatio;
+        }
+        else{
+            return 1/screenRatio;
+        }
+    }
+
+
+    public LandscapeTransform landscapeTransform = new LandscapeTransform();
 
     public Transform() {
         this.positionX = 0f;
@@ -26,6 +41,20 @@ public class Transform extends Component {
         this.scaleZ = 1f;
 
         this.anchorPoint = TransformAnchorPoint.Center;
+    }
+
+    public Transform(Transform t){
+        this.positionX = t.positionX;
+        this.positionY = t.positionY;
+        this.positionZ = t.positionZ;
+        this.rotationX = t.rotationX;
+        this.rotationY = t.rotationY;
+        this.rotationZ = t.rotationZ;
+        this.scaleX = t.scaleX;
+        this.scaleY = t.scaleY;
+        this.scaleZ = t.scaleZ;
+
+        this.anchorPoint = t.anchorPoint;
     }
 
     public float positionX, positionY, positionZ;
@@ -81,18 +110,36 @@ public class Transform extends Component {
     }
 
     public float ScreenPositionX(){
-        return (sceneWidth /2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
-                + (positionX*Transform.gameUnitX())/Camera.main.getSize()  // position de l'objet
-                + (getAnchorPointX())/Camera.main.getSize() // point d'ancrage
-                + ((scaleX*Transform.gameUnitX())/Camera.main.getSize())/2f; // scale (on prend le milieu de l'objet)
+        if(landScapeMode()){
+            return (sceneWidth /2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
+                    + (positionX*landscapeTransform.mulPosX*Transform.gameUnitX() + landscapeTransform.addPosX*Transform.gameUnitX())/Camera.main.getSize()  // position de l'objet
+                    + (getAnchorPointX())/Camera.main.getSize() // point d'ancrage
+                    + ((scaleX*landscapeTransform.mulScaleX*Transform.gameUnitX() + landscapeTransform.addScaleX*Transform.gameUnitX())/Camera.main.getSize())/2f; // scale (on prend le milieu de l'objet)
+        }
+        else{
+            return (sceneWidth /2f)/Camera.main.getSize() // position Source ( milieu de l'écran )
+                    + (positionX*Transform.gameUnitX() )/Camera.main.getSize()  // position de l'objet
+                    + (getAnchorPointX())/Camera.main.getSize() // point d'ancrage
+                    + ((scaleX*Transform.gameUnitX() )/Camera.main.getSize())/2f; // scale (on prend le milieu de l'objet)
+        }
     }
 
     public float ScreenPositionY(){
-        return ((sceneHeight /2f)/Camera.main.getSize())/screenRatio
-                - ((positionY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio
-                - ((getAnchorPointY())/Camera.main.getSize())/Transform.screenRatio
-                - (((scaleY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio)/2f;
+        if(landScapeMode()){
+            return ((sceneHeight /2f)/Camera.main.getSize())/screenRatio
+                    - ((positionY*landscapeTransform.mulPosY*Transform.gameUnitY() + landscapeTransform.addPosY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio
+                    - ((getAnchorPointY())/Camera.main.getSize())/Transform.screenRatio
+                    - (((scaleY*landscapeTransform.mulScaleY*Transform.gameUnitY() + landscapeTransform.addScaleY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio)/2f;
+        }
+        else{
+            return ((sceneHeight /2f)/Camera.main.getSize())/screenRatio
+                    - ((positionY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio
+                    - ((getAnchorPointY())/Camera.main.getSize())/Transform.screenRatio
+                    - (((scaleY*Transform.gameUnitY())/Camera.main.getSize())/Transform.screenRatio)/2f;
+        }
     }
+
+
 
     @Override
     public void Draw(GL10 gl){
@@ -107,9 +154,16 @@ public class Transform extends Component {
         float xStartingPoint = sceneWidth /2f; // le milieu de l'écran
         float yStartingPoint = sceneHeight /2f; // le milieu de l'écran
 
-        gl.glTranslatef (xStartingPoint+getAnchorPointX()+positionX*gameUnitX(), yStartingPoint+getAnchorPointY()+positionY*gameUnitY(), 0f); // TRANSLATION
+        if(landScapeMode()){
+            gl.glTranslatef (xStartingPoint+getAnchorPointX()+positionX*landscapeTransform.mulPosX*gameUnitX()+landscapeTransform.addPosX*gameUnitX(), yStartingPoint+getAnchorPointY()+positionY*landscapeTransform.mulPosY*gameUnitY()+landscapeTransform.addPosY*gameUnitY(), 0f); // TRANSLATION
+            gl.glScalef (gameUnitX()*scaleX*landscapeTransform.mulScaleX+landscapeTransform.addScaleX*gameUnitX(), gameUnitY()*scaleY* landscapeTransform.mulScaleY+landscapeTransform.addScaleY*gameUnitY(), 0f); // SCALE
+        }
+        else{
+            gl.glTranslatef (xStartingPoint+getAnchorPointX()+positionX*gameUnitX(), yStartingPoint+getAnchorPointY()+positionY*gameUnitY(), 0f); // TRANSLATION
+            gl.glScalef (gameUnitX()*scaleX, gameUnitY()*scaleY, 0f); // SCALE
 
-        gl.glScalef (gameUnitX()*scaleX, gameUnitY()*scaleY, 0f); // SCALE
+        }
+
     }
 
 }

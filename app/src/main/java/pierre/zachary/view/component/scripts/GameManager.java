@@ -25,6 +25,8 @@ import pierre.zachary.modele.exception.PionsNotInGrid;
 import pierre.zachary.modele.exception.TargetNotEmpty;
 import pierre.zachary.view.Camera;
 import pierre.zachary.view.GameObject;
+import pierre.zachary.view.component.LandscapeTransform;
+import pierre.zachary.view.component.Transform;
 import pierre.zachary.view.component.renderer.collider.SpriteCollider;
 import pierre.zachary.view.component.TransformAnchorPoint;
 import pierre.zachary.view.component.renderer.SpriteRenderer;
@@ -70,6 +72,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 gridGO.add(caseGO);
                 caseGO.transform.positionX = start+i+0.5f; // 0.5 car le transform est au centre du gameobject
                 caseGO.transform.positionY = start+j+0.5f;
+                defaultLandscapeTransform(caseGO.transform);
                 caseGO.addComponent(new SpriteRenderer(R.drawable.resource_case));
                 caseGO.addComponent(new SpriteCollider());
                 caseGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
@@ -186,6 +189,32 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     }
 
 
+    public void defaultLandscapeTransform(Transform t){
+        t.landscapeTransform.mulPosX *= Transform.landScapeModeScreenRatio()*.93f; // petite marge de 7% car j'ai une bordure sur mon émulateur
+        t.landscapeTransform.mulPosY *= Transform.landScapeModeScreenRatio()*.93f;
+        t.landscapeTransform.addPosX += (Transform.landScapeModeScreenRatio()*.93f)/1.5f;
+        t.landscapeTransform.addPosY += (Transform.landScapeModeScreenRatio()*.93f)/1.5f;
+        t.landscapeTransform.mulScaleX *= Transform.landScapeModeScreenRatio()*.93f;
+        t.landscapeTransform.mulScaleY *=  Transform.landScapeModeScreenRatio()*.93f;
+    }
+
+    public void selectPionsGo(GameObject pionsGOToSelect){
+        Pions p = getPions(pionsGOToSelect);
+        if(p!=null){
+            selectedPion = p;
+            if(case_selector!=null){
+                case_selector.scene.remove(case_selector);
+            }
+            case_selector = new GameObject(pionsGOToSelect.scene, "Case selector");
+            case_selector.addComponent(new SpriteRenderer(R.drawable.case_select));
+            case_selector.addComponent(new SpriteCollider());
+            defaultLandscapeTransform(case_selector.transform);
+            case_selector.transform.positionX = pionsGOToSelect.transform.positionX;
+            case_selector.transform.positionY = pionsGOToSelect.transform.positionY;
+        }
+    }
+
+
 
     @Override
     public void drawGrid(Grid g) {
@@ -211,6 +240,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     if(nextPionsHashMap.containsKey(p)){
                         GameObject pionsGO = nextPionsHashMap.get(p);
                         pionsGO.name = "Pions "+i+":"+j;
+                        defaultLandscapeTransform(pionsGO.transform);
                         Animator anim = new Animator();
                         animators.add(anim);
                         pionsGO.addComponent(anim);
@@ -220,19 +250,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         pionsGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
                             @Override
                             public String apply(GameObject gameObject) {
-                                Pions p = getPions(gameObject);
-                                if(p!=null){
-                                    selectedPion = p;
-                                    if(case_selector!=null){
-                                        case_selector.scene.remove(case_selector);
-                                    }
-                                    case_selector = new GameObject(gameObject.scene, "Case selector");
-                                    case_selector.addComponent(new SpriteRenderer(R.drawable.case_select));
-                                    case_selector.addComponent(new SpriteCollider());
-                                    case_selector.transform.positionX = gameObject.transform.positionX;
-                                    case_selector.transform.positionY = gameObject.transform.positionY;
-                                }
-
+                                selectPionsGo(gameObject);
                                 return null;
                             }}));
                         pionsGameObjectHashMap.put(p, pionsGO);
@@ -244,27 +262,14 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         pionsGO.name = "Pions "+i+":"+j;
                         pionsGO.transform.positionX = start+i+0.5f;
                         pionsGO.transform.positionY = start+j+0.5f;
+                        defaultLandscapeTransform(pionsGO.transform);
                         pionsGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
-
-
                         pionsGO.scene.add(pionsGO);
                         pionsGO.addComponent(new SpriteCollider());
                         pionsGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
                             @Override
                             public String apply(GameObject gameObject) {
-                                Pions p = getPions(gameObject);
-                                if(p!=null){
-                                    selectedPion = p;
-                                    if(case_selector!=null){
-                                        case_selector.scene.remove(case_selector);
-                                    }
-                                    case_selector = new GameObject(gameObject.scene, "Case selector");
-                                    case_selector.addComponent(new SpriteRenderer(R.drawable.case_select));
-                                    case_selector.addComponent(new SpriteCollider());
-                                    case_selector.transform.positionX = gameObject.transform.positionX;
-                                    case_selector.transform.positionY = gameObject.transform.positionY;
-                                }
-
+                                selectPionsGo(gameObject);
                                 return null;
                             }}));
                         pionsGameObjectHashMap.put(p, pionsGO);
