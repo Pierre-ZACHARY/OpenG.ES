@@ -49,6 +49,10 @@ public class Grid {
                 this.pionsAligne = 4;
                 this.nombreDePions = 5;
         }
+        reset();
+    }
+
+    public void reset(){
         this.grid = new ArrayList<Pions>(this.gridSize*this.gridSize);
         for(int i = 0; i<getGridSize()*getGridSize();i++){
             this.grid.add(null);
@@ -129,7 +133,7 @@ public class Grid {
         }
         this.draw();
         this.populateNext();
-        this.drawer.drawNext(this.next);
+        //this.drawer.drawNext(this.next);
         List<Position> vide = this.getVide();
         if(vide.size() == 0){
             this.drawer.gameOver(this);

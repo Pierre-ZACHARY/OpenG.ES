@@ -21,41 +21,39 @@ public class Facade implements Drawer, Score{
 
     private Grid level1;
     private Grid level2;
-    private HashMap<Grid, HashSet<Drawer>> drawerPerGrid;
-    private HashMap<Grid, HashSet<Score>> scorePerGrid;
+    private HashMap<Grid, Drawer> drawerPerGrid;
+    private HashMap<Grid, Score> scorePerGrid;
     private Grid currentGrid;
 
     private Facade(){
+        drawerPerGrid = new HashMap<>();
+        scorePerGrid = new HashMap<>();
+        level1 = new Grid(0, this, this);
+        level2 = new Grid(1, this, this);
         reset();
     }
     
     public void reset(){
-        drawerPerGrid = new HashMap<>();
-        scorePerGrid = new HashMap<>();
-
-        level1 = new Grid(0, this, this);
-        drawerPerGrid.put(level1, new HashSet<>());
-        scorePerGrid.put(level1, new HashSet<>());
+        drawerPerGrid.clear();
+        scorePerGrid.clear();
+        level1.reset();
+        level2.reset();
         level1.spawnNext();
-
-
-        level2 = new Grid(1, this, this);
-        drawerPerGrid.put(level2, new HashSet<>());
-        scorePerGrid.put(level2, new HashSet<>());
         level2.spawnNext();
+
     }
 
     public Grid Level9x9(Score s, Drawer d){
         currentGrid = level1;
-        drawerPerGrid.get(level1).add(d);
-        scorePerGrid.get(level1).add(s);
+        drawerPerGrid.put(level1, d);
+        scorePerGrid.put(level1, s);
         return currentGrid;
     }
 
     public Grid Level7x7(Score s, Drawer d){
         currentGrid = level2;
-        drawerPerGrid.get(level2).add(d);
-        scorePerGrid.get(level2).add(s);
+        drawerPerGrid.put(level1, d);
+        scorePerGrid.put(level1, s);
         return currentGrid;
     }
 
@@ -74,41 +72,36 @@ public class Facade implements Drawer, Score{
     @Override
     public void drawGrid(Grid g) {
         if(drawerPerGrid.containsKey(currentGrid)){
-            for(Drawer d : drawerPerGrid.get(currentGrid)){
-                d.drawGrid(g);
-            }
+            drawerPerGrid.get(currentGrid).drawGrid(g);
         }
     }
 
-    public void askRedraw(Drawer d){
+    public void askRedraw(Drawer d, Score s){
         d.drawGrid(currentGrid);
         d.drawNext(currentGrid.next);
+        drawerPerGrid.put(level1, d);
+        scorePerGrid.put(level1, s);
     }
 
     @Override
     public void drawNext(List<Pions> pionsList) {
         if(drawerPerGrid.containsKey(currentGrid)){
-            for(Drawer d : drawerPerGrid.get(currentGrid)){
-                d.drawNext(pionsList);
-            }
+            drawerPerGrid.get(currentGrid).drawNext(pionsList);
         }
     }
 
     @Override
     public void gameOver(Grid g) {
         if(drawerPerGrid.containsKey(currentGrid)){
-            for(Drawer d : drawerPerGrid.get(currentGrid)){
-                d.gameOver(g);
-            }
+            drawerPerGrid.get(currentGrid).gameOver(g);
         }
     }
 
     @Override
     public void addCallbackAction(Function<String, String> callback) {
         if(drawerPerGrid.containsKey(currentGrid)){
-            for(Drawer d : drawerPerGrid.get(currentGrid)){
-                d.addCallbackAction(callback);
-            }
+            drawerPerGrid.get(currentGrid).addCallbackAction(callback);
+
         }
 
     }
@@ -116,9 +109,8 @@ public class Facade implements Drawer, Score{
     @Override
     public void notifyScoreChanged(int addedScore) {
         if(scorePerGrid.containsKey(currentGrid)){
-            for(Score s : scorePerGrid.get(currentGrid)){
-                s.notifyScoreChanged(addedScore);
-            }
+            scorePerGrid.get(currentGrid).notifyScoreChanged(addedScore);
+
         }
 
     }

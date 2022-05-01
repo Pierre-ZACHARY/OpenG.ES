@@ -40,6 +40,6 @@ public class Pions {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type);
+        return Objects.hash(id);
     }
 }

@@ -74,6 +74,7 @@ public class GameManagerLandscape extends MonoBehaviour implements Score, Drawer
         this.gameObject.scene.clearGameObjects();
         this.gameObject.scene.add(this.gameObject);
         pionsGameObjectHashMap.clear();
+        gridGO.clear();
         nextPionsHashMap.clear();
         actionsList.clear();
         animators.clear();
@@ -140,7 +141,7 @@ public class GameManagerLandscape extends MonoBehaviour implements Score, Drawer
             caseGO.addComponent(new SpriteRenderer(R.drawable.resource_case));
         }
 
-        jeu.askRedraw(this);
+        jeu.askRedraw(this, this);
     }
 
     public void Start(){

@@ -35,7 +35,6 @@ public class EndSceneLandscape extends Scene {
     public void load(GL10 gl) {
         super.load(gl);
         this.clearGameObjects();
-        mainCamera = new Camera( 1, true);
 
         GameObject titre = new GameObject(this, "Game Over Text");
         titre.transform.positionY = .1f ;
@@ -105,6 +104,6 @@ public class EndSceneLandscape extends Scene {
 
     @Override
     public void Start() {
-
+        mainCamera = new Camera( 1, true);
     }
 }
