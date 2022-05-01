@@ -1,8 +1,7 @@
-package pierre.zachary.view.component.scripts;
+package pierre.zachary.view.scene.landscape.landscapescripts;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.preference.Preference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,15 +24,20 @@ import pierre.zachary.modele.exception.PionsNotInGrid;
 import pierre.zachary.modele.exception.TargetNotEmpty;
 import pierre.zachary.view.Camera;
 import pierre.zachary.view.GameObject;
-import pierre.zachary.view.component.renderer.collider.SpriteCollider;
+import pierre.zachary.view.component.Transform;
 import pierre.zachary.view.component.TransformAnchorPoint;
 import pierre.zachary.view.component.renderer.SpriteRenderer;
 import pierre.zachary.view.component.renderer.TextRenderer;
 import pierre.zachary.view.component.renderer.TextSize;
+import pierre.zachary.view.component.renderer.collider.SpriteCollider;
+import pierre.zachary.view.component.scripts.Animator;
+import pierre.zachary.view.component.scripts.MonoBehaviour;
+import pierre.zachary.view.component.scripts.OnClickCallBackBehaviour;
+import pierre.zachary.view.component.scripts.TransformAnimation;
 import pierre.zachary.view.scene.SceneDispatcher;
 import pierre.zachary.view.scene.SceneName;
 
-public class GameManager extends MonoBehaviour implements Score, Drawer {
+public class GameManagerLandscape extends MonoBehaviour implements Score, Drawer {
 
     Facade jeu;
     Grid grid;
@@ -49,7 +53,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
     int level;
 
-    public GameManager(int level) {
+    public GameManagerLandscape(int level) {
         this.level = level;
         jeu = Facade.getInstance();
         switch (level){
@@ -60,30 +64,30 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 grid = jeu.Level7x7(this, this);
                 break;
         }
-    }
-
-    public void Start(){
-
-
 
     }
 
     @Override
     public void Load(GL10 gl) {
         super.Load(gl);
+
         this.gameObject.scene.clearGameObjects();
         this.gameObject.scene.add(this.gameObject);
         pionsGameObjectHashMap.clear();
         nextPionsHashMap.clear();
         actionsList.clear();
         animators.clear();
+        // todo On a besoin d'attendre Load pour que Transform.landscapeRatio soit définit, il y a surement une manière plus propre de le faire ...
+
         for(int i = 0; i<grid.getGridSize(); i++){
             for(int j=0; j< grid.getGridSize(); j++){
                 float start = -(Camera.main.getSize()/2f);
                 GameObject caseGO = new GameObject(this.gameObject.scene, "Case "+i+":"+j);
                 gridGO.add(caseGO);
-                caseGO.transform.positionX = start+i+0.5f; // 0.5 car le transform est au centre du gameobject
-                caseGO.transform.positionY = start+j+0.5f;
+                caseGO.transform.positionX = (start+i+0.5f)* Transform.screenRatio; // 0.5 car le transform est au centre du gameobject
+                caseGO.transform.positionY = (start+j+0.5f)* Transform.screenRatio;
+                caseGO.transform.scaleX = Transform.screenRatio;
+                caseGO.transform.scaleY = Transform.screenRatio;
                 caseGO.addComponent(new SpriteRenderer(R.drawable.resource_case));
                 caseGO.addComponent(new SpriteCollider());
                 caseGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
@@ -106,35 +110,41 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         return null;
                     }
                 }));
-
             }
         }
+
         GameObject titreNiveau = new GameObject(this.gameObject.scene, "Score");
-        titreNiveau.transform.positionX = 0f;
-        titreNiveau.transform.scaleX = 5;
-        titreNiveau.transform.scaleY = 5;
-        titreNiveau.transform.positionY = ((int) (grid.getGridSize()/2))+2;
+        titreNiveau.transform.positionY = 0.1f;
+        titreNiveau.transform.scaleX = 5 * Transform.screenRatio;
+        titreNiveau.transform.scaleY = 5 * Transform.screenRatio;
+        titreNiveau.transform.positionX = (-(Camera.main.getSize()/2f)-((Camera.main.getSize()/2f+0.5f)* Transform.screenRatio))/2f; // le milieu de la bordure gauche de l'écran et la bordure gauche de la grille
         titreNiveau.transform.anchorPoint = TransformAnchorPoint.Center;
         TextRenderer niveauTexteRenderer = new TextRenderer("Niveau "+level, Color.valueOf(Color.WHITE), TextSize.Title, this.gameObject.scene.getFont(R.font.luckiestguy));
         titreNiveau.addComponent(niveauTexteRenderer);
 
         GameObject affichageScore = new GameObject(this.gameObject.scene, "Score");
-        affichageScore.transform.positionX = 0f;
-        affichageScore.transform.scaleX = 5;
-        affichageScore.transform.scaleY = 5;
-        affichageScore.transform.positionY = ((int) (grid.getGridSize()/2))+1;
+        affichageScore.transform.positionY = -.1f;
+        affichageScore.transform.scaleX = 5 * Transform.screenRatio;
+        affichageScore.transform.scaleY = 5 * Transform.screenRatio;
+        affichageScore.transform.positionX = (-(Camera.main.getSize()/2f)-((Camera.main.getSize()/2f+0.5f)* Transform.screenRatio))/2f;
         affichageScore.transform.anchorPoint = TransformAnchorPoint.Center;
         scoreTextRenderer = new TextRenderer("SCORE : 0", Color.valueOf(Color.WHITE), TextSize.SubTitle);
         affichageScore.addComponent(scoreTextRenderer);
 
         for(int k = 0; k<3; k++){
             GameObject caseGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
-            caseGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
-            caseGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
+            caseGO.transform.positionX = ((Camera.main.getSize()/2f)+(Camera.main.getSize()/2f+0.5f)*Transform.screenRatio)/2f; // 0.5 car le transform est au centre du gameobject
+            caseGO.transform.positionY = (-1+k)*Transform.screenRatio;
+            caseGO.transform.scaleX = Transform.screenRatio;
+            caseGO.transform.scaleY = Transform.screenRatio;
             caseGO.addComponent(new SpriteRenderer(R.drawable.resource_case));
         }
 
         jeu.askRedraw(this);
+    }
+
+    public void Start(){
+
     }
 
     @Override
@@ -168,7 +178,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                 case 5: return R.drawable.bonbon_vert;
                 case 6: return R.drawable.bonbon_violet;
                 default:
-                    System.err.println("Type>6");
+                    System.out.println("Type>6");
                     return R.drawable.bonbon_bleu;
             }
         }
@@ -225,10 +235,13 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     if(nextPionsHashMap.containsKey(p)){
                         GameObject pionsGO = nextPionsHashMap.get(p);
                         pionsGO.name = "Pions "+i+":"+j;
+                        pionsGO.transform.scaleX = Transform.screenRatio;
+                        pionsGO.transform.scaleY = Transform.screenRatio;
+
                         Animator anim = new Animator();
                         animators.add(anim);
                         pionsGO.addComponent(anim);
-                        anim.addAnim(new TransformAnimation(pionsGO, start+i+0.5f, start+j+0.5f));
+                        anim.addAnim(new TransformAnimation(pionsGO, (start+i+0.5f)*Transform.screenRatio, (start+j+0.5f)*Transform.screenRatio));
 
                         pionsGO.addComponent(new SpriteCollider());
                         pionsGO.addComponent(new OnClickCallBackBehaviour(new Function<GameObject, String>() {
@@ -245,6 +258,8 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                                     case_selector.addComponent(new SpriteCollider());
                                     case_selector.transform.positionX = gameObject.transform.positionX;
                                     case_selector.transform.positionY = gameObject.transform.positionY;
+                                    case_selector.transform.scaleX = gameObject.transform.scaleX;
+                                    case_selector.transform.scaleY = gameObject.transform.scaleY;
                                 }
 
                                 return null;
@@ -256,8 +271,10 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                     else if(!pionsGameObjectHashMap.containsKey(p)){ // déplacement d'un nouveau pion
                         GameObject pionsGO = new GameObject(this.gameObject.scene);
                         pionsGO.name = "Pions "+i+":"+j;
-                        pionsGO.transform.positionX = start+i+0.5f;
-                        pionsGO.transform.positionY = start+j+0.5f;
+                        pionsGO.transform.positionX = (start+i+0.5f)*Transform.screenRatio;
+                        pionsGO.transform.positionY = (start+j+0.5f)*Transform.screenRatio;
+                        pionsGO.transform.scaleX =Transform.screenRatio;
+                        pionsGO.transform.scaleY =Transform.screenRatio;
                         pionsGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
 
 
@@ -277,6 +294,8 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                                     case_selector.addComponent(new SpriteCollider());
                                     case_selector.transform.positionX = gameObject.transform.positionX;
                                     case_selector.transform.positionY = gameObject.transform.positionY;
+                                    case_selector.transform.scaleX = gameObject.transform.scaleX;
+                                    case_selector.transform.scaleY = gameObject.transform.scaleY;
                                 }
 
                                 return null;
@@ -291,15 +310,15 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
                         if(!pionsGO.name.equals("Pions " + i + ":" + j)){
                             System.out.println("Moving : "+pionsGO+" to "+i+", "+j);
                             pionsGO.name = "Pions "+i+":"+j;
-
+                            pionsGO.transform.scaleX = Transform.screenRatio;
+                            pionsGO.transform.scaleY = Transform.screenRatio;
                             Animator anim =(Animator) pionsGO.getComponent(Animator.class);
                             if(anim == null){
                                 anim = new Animator();
                                 animators.add(anim);
                                 pionsGO.addComponent(anim);
                             }
-                            anim.addAnim(new TransformAnimation(pionsGO, 100, start+i+0.5f, start+j+0.5f));
-                            // TODO : attendre que ça ai fini de bouger avant de : regarder si ils sont alignés / spawn les next
+                            anim.addAnim(new TransformAnimation(pionsGO, 100, (start+i+0.5f)*Transform.screenRatio, (start+j+0.5f)*Transform.screenRatio));
                         }
                         pionsGO.scene.add(pionsGO);
 
@@ -325,13 +344,13 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
 
                 if(!nextPionsHashMap.containsKey(p)){
                     GameObject nextPionGO = new GameObject(this.gameObject.scene, "NextPionGO : "+k);
-                    nextPionGO.transform.positionX = -1+k; // 0.5 car le transform est au centre du gameobject
-                    nextPionGO.transform.positionY = ((int) -(grid.getGridSize()/2))-1.2f;
+                    nextPionGO.transform.positionX = ((Camera.main.getSize()/2f)+(Camera.main.getSize()/2f+0.5f)*Transform.screenRatio)/2f; // 0.5 car le transform est au centre du gameobject
+                    nextPionGO.transform.positionY = (-1+k)*Transform.screenRatio;
+                    nextPionGO.transform.scaleX = Transform.screenRatio;
+                    nextPionGO.transform.scaleY = Transform.screenRatio;
                     nextPionGO.addComponent(new SpriteRenderer(this.getImageRessource(p)));
                     nextPionsHashMap.put(p, nextPionGO);
                 }
-
-
             }
         }
 

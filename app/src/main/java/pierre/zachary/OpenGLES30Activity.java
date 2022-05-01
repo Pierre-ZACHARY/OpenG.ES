@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import pierre.zachary.modele.Facade;
+import pierre.zachary.view.scene.SceneDispatcher;
 
 /* Ce tutorial est issu d'un tutorial http://developer.android.com/training/graphics/opengl/index.html :
 openGLES.zip HelloOpenGLES20
@@ -20,6 +21,8 @@ public class OpenGLES30Activity extends Activity {
 
     // le conteneur View pour faire du rendu OpenGL
     private GLSurfaceView mGLView;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

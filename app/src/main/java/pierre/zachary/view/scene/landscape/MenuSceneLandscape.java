@@ -1,4 +1,4 @@
-package pierre.zachary.view.scene;
+package pierre.zachary.view.scene.landscape;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,19 +6,20 @@ import android.graphics.Color;
 
 import java.util.function.Function;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import pierre.zachary.R;
 import pierre.zachary.view.Camera;
 import pierre.zachary.view.GameObject;
-import pierre.zachary.view.component.scripts.OnClickCallBackBehaviour;
 import pierre.zachary.view.component.renderer.TextRenderer;
-import pierre.zachary.view.component.renderer.collider.TextRendererBackgroundCollider;
 import pierre.zachary.view.component.renderer.TextSize;
+import pierre.zachary.view.component.renderer.collider.TextRendererBackgroundCollider;
+import pierre.zachary.view.component.scripts.OnClickCallBackBehaviour;
+import pierre.zachary.view.scene.Scene;
+import pierre.zachary.view.scene.SceneDispatcher;
+import pierre.zachary.view.scene.SceneName;
 
-public class MenuScene extends Scene {
+public class MenuSceneLandscape extends Scene {
 
-    public MenuScene(Context context) {
+    public MenuSceneLandscape(Context context) {
         super(context);
         Start();
     }
@@ -28,16 +29,25 @@ public class MenuScene extends Scene {
         mainCamera = new Camera( 1, true);
 
         GameObject titre = new GameObject(this, "WelcomeText");
-        titre.transform.positionY = .2f ;
+        titre.transform.positionY = .1f ;
+        titre.transform.positionX = -.25f ;
+        titre.transform.scaleX = .5f;
+        titre.transform.scaleY = .5f;
         titre.addComponent(new TextRenderer("Cinq ou +", Color.valueOf(Color.WHITE), TextSize.Title, this.getFont(R.font.luckiestguy)));
 
-        // TODO pas top d'utiliser deux gameobject différent, l'affichage risque de change selon les dimension de l'écran, le mieux serait de mettre tout le texte dans le même, ça nécessite de pas mal modifier le TextRenderer
         GameObject auteur = new GameObject(this, "Auteur");
-        auteur.transform.positionY = .1f ;
+        auteur.transform.positionY = 0f ;
+        auteur.transform.positionX = -.25f ;
+        auteur.transform.scaleX = .5f;
+        auteur.transform.scaleY = .5f;
         auteur.addComponent(new TextRenderer("Pierre ZACHARY", Color.valueOf(Color.GRAY), TextSize.Hint));
 
 
         GameObject meilleurscore = new GameObject(this, "Meilleur score");
+        meilleurscore.transform.positionY = -0.1f ;
+        meilleurscore.transform.positionX = -.25f ;
+        meilleurscore.transform.scaleX = .5f;
+        meilleurscore.transform.scaleY = .5f;
         SharedPreferences pref = this.getPrefs();
         TextRenderer meilleurscoretr = new TextRenderer(
                 "Meilleur Score : "+pref.getInt("BestScore", 0),
@@ -57,9 +67,10 @@ public class MenuScene extends Scene {
 
 
         GameObject niveau1 = new GameObject(this, "niveau1");
-        niveau1.transform.positionY = -0.2f ;
-        niveau1.transform.scaleX = .7f ;
-        niveau1.transform.scaleY = .7f ;
+        niveau1.transform.positionY = 0.05f ;
+        niveau1.transform.positionX = .25f ;
+        niveau1.transform.scaleX = .35f ;
+        niveau1.transform.scaleY = .35f ;
         TextRenderer niveau1TR = new TextRenderer("Niveau 1", Color.valueOf(Color.WHITE), TextSize.SubTitle, this.getFont(R.font.luckiestguy));
         niveau1TR.addBackground(getDrawable(R.drawable.orange_button));
         niveau1.addComponent(niveau1TR);
@@ -73,9 +84,10 @@ public class MenuScene extends Scene {
         }));
 
         GameObject niveau2 = new GameObject(this, "niveau2");
-        niveau2.transform.positionY = -0.4f ;
-        niveau2.transform.scaleX = .7f ;
-        niveau2.transform.scaleY = .7f ;
+        niveau2.transform.positionY = -0.05f ;
+        niveau2.transform.positionX = .25f ;
+        niveau2.transform.scaleX = .35f ;
+        niveau2.transform.scaleY = .35f ;
         TextRenderer niveau2TR = new TextRenderer("Niveau 2", Color.valueOf(Color.WHITE), TextSize.SubTitle, this.getFont(R.font.luckiestguy));
         niveau2TR.addBackground(getDrawable(R.drawable.magenta_button));
         niveau2.addComponent(niveau2TR);

@@ -1,5 +1,8 @@
 package pierre.zachary.view.component.renderer;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import javax.microedition.khronos.opengles.GL10;
 
 import pierre.zachary.view.Camera;
@@ -9,13 +12,12 @@ import pierre.zachary.view.component.Transform;
 public class SpriteRenderer extends Component {
     float imageHeightRatio = 1f;
     int ressourceId;
-    Vertex shape = new Vertex (new float[]
-            {
-                    1f,1f,0f,
-                    0f,1f,0f,
-                    1f,0f,0f,
-                    0f,0f,0f,
-            });
+    Vertex shape = new Vertex (new float[]{
+            1f, 1f, 0f,
+            0f, 1f, 0f,
+            1f, 0f, 0f,
+            0f, 0f, 0f,
+    });
     Vertex texture = new Vertex (new float[]{
             1.0f, 0.0f,
             0.0f, 0.0f,
@@ -33,6 +35,7 @@ public class SpriteRenderer extends Component {
 
     @Override
     public void Load(GL10 gl){
+        hasBeenLoaded = false;
         if(gameObject.scene != null){
             imageId = gameObject.scene.loadImage(gl, ressourceId);
             float imageWidth = gameObject.scene.imagesDimById.get(imageId).get(0);
@@ -89,8 +92,8 @@ public class SpriteRenderer extends Component {
         Transform t = this.gameObject.transform;
         float centerX = t.ScreenPositionX(); // position au centre de l'objet en X
         float centerY = t.ScreenPositionY();
-        boolean xInside = x<centerX+(Transform.gameUnitX()/ Camera.main.getSize())/2f && x>centerX-(Transform.gameUnitX()/Camera.main.getSize())/2f;
-        boolean yInside = y<centerY+(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f && y>centerY-(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/Transform.screenRatio)/2f;
+        boolean xInside = x<centerX+(Transform.gameUnitX()/ Camera.main.getSize()*min(1f,Transform.screenRatio))/2f && x>centerX-(Transform.gameUnitX()/Camera.main.getSize()*min(1f,Transform.screenRatio))/2f;
+        boolean yInside = y<centerY+(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/max(1f,Transform.screenRatio))/2f && y>centerY-(Transform.gameUnitY()*imageHeightRatio/Camera.main.getSize()/max(1f,Transform.screenRatio))/2f;
         return xInside && yInside;
     }
 }

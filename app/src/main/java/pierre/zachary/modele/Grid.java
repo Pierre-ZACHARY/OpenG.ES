@@ -32,7 +32,7 @@ public class Grid {
     private int pionsAligne = 5;
     private int nombreDePions = 7;
     private ArrayList<Pions> grid;
-    private ArrayList<Pions> next;
+    public ArrayList<Pions> next;
 
     public Grid(int type, Score s, Drawer d){
         this.drawer = d;

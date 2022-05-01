@@ -27,7 +27,7 @@ public class Pions {
     }
 
     public boolean sameType(Pions p){
-        return type == p.type;
+        return p!=null && type == p.type;
     }
 
     @Override

@@ -43,9 +43,11 @@ public class MyGLSurfaceView extends GLSurfaceView {
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         // Création d'un context OpenGLES 3.0
         setEGLContextClientVersion(1);
-
+        if(SceneDispatcher.getInstance() == null){
+            new SceneDispatcher(context);
+        }
         // Création du renderer qui va être lié au conteneur View créé
-        dispatcher = new SceneDispatcher(context);
+        dispatcher = SceneDispatcher.getInstance();
         setRenderer(dispatcher);
 
         // Option pour indiquer qu'on redessine uniquement si les données changent

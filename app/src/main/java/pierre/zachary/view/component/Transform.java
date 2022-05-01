@@ -14,6 +14,7 @@ public class Transform extends Component {
     public static int screenHeight;
 
 
+
     public Transform() {
         this.positionX = 0f;
         this.positionY = 0f;

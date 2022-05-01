@@ -70,6 +70,7 @@ public abstract class Scene implements GLSurfaceView.Renderer
     @Override
     public void onSurfaceChanged (GL10 gl, int width, int height)
     {
+        images.clear(); // onSurfaceChanged est call quand il y a une rotation d'écran, dans ce cas là l'activité est re-créer, il faut donc recharger les images dans celle ci
         this.width = width;
         this.height = height;
         Transform.screenRatio = height/(width*1f);
@@ -153,6 +154,10 @@ public abstract class Scene implements GLSurfaceView.Renderer
     public void resetScene(){
         gameObjectList.clear();
         Start();
+    }
+
+    public void clearGameObjects(){
+        gameObjectList.clear();
     }
 
     public void load (GL10 gl)

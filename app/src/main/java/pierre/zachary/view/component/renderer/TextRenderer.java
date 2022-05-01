@@ -111,6 +111,7 @@ public class TextRenderer  extends Component {
 
     @Override
     public void Load(GL10 gl){
+        hasBeenLoaded = false;
         if(gameObject.scene != null){
             DrawTextOnCanvas();
             textureId = this.gameObject.scene.loadBitmap(gl, bitmap);

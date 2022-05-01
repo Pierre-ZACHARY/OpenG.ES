@@ -1,18 +1,18 @@
-package pierre.zachary.view.scene;
+package pierre.zachary.view.scene.landscape;
 
 import android.content.Context;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import pierre.zachary.view.Camera;
-import pierre.zachary.view.component.scripts.GameManager;
 import pierre.zachary.view.GameObject;
+import pierre.zachary.view.component.scripts.GameManager;
+import pierre.zachary.view.scene.Scene;
+import pierre.zachary.view.scene.landscape.landscapescripts.GameManagerLandscape;
 
-public class MainScene extends Scene {
+public class MainSceneLandscape extends Scene {
     private final int level;
     GameObject gameManager;
 
-    public MainScene(Context context, int level) {
+    public MainSceneLandscape(Context context, int level) {
         super(context);
         this.level = level;
         Start();
@@ -30,6 +30,6 @@ public class MainScene extends Scene {
                 break;
         }
         gameManager = new GameObject(this, "Game Manager");
-        gameManager.addComponent(new GameManager(level));
+        gameManager.addComponent(new GameManagerLandscape(level));
     }
 }
