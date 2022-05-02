@@ -76,11 +76,13 @@ public class Facade implements Drawer, Score{
         }
     }
 
-    public void askRedraw(Drawer d, Score s){
+    public void askRedraw(Grid g, Drawer d, Score s){
+        currentGrid = g;
         d.drawGrid(currentGrid);
         d.drawNext(currentGrid.next);
-        drawerPerGrid.put(level1, d);
-        scorePerGrid.put(level1, s);
+        s.notifyScoreChanged(currentGrid.currentScore);
+        drawerPerGrid.put(currentGrid, d);
+        scorePerGrid.put(currentGrid, s);
     }
 
     @Override

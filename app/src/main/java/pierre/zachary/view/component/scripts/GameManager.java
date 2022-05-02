@@ -135,7 +135,7 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
             caseGO.addComponent(new SpriteRenderer(R.drawable.resource_case));
         }
 
-        jeu.askRedraw(this, this);
+        jeu.askRedraw(this.grid, this, this);
     }
 
     @Override
@@ -362,8 +362,8 @@ public class GameManager extends MonoBehaviour implements Score, Drawer {
     }
 
     @Override
-    public void notifyScoreChanged(int addedScore) {
-        score += addedScore;
+    public void notifyScoreChanged(int currentScore) {
+        score = currentScore;
         scoreTextRenderer.setText("SCORE : "+score);
     }
 }

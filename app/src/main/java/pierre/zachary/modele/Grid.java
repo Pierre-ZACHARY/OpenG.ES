@@ -23,6 +23,7 @@ public class Grid {
     private final int type;
     private final Score score;
     private final Drawer drawer;
+    public int currentScore = 0;
 
     public int getGridSize() {
         return gridSize;
@@ -53,6 +54,7 @@ public class Grid {
     }
 
     public void reset(){
+        this.currentScore = 0;
         this.grid = new ArrayList<Pions>(this.gridSize*this.gridSize);
         for(int i = 0; i<getGridSize()*getGridSize();i++){
             this.grid.add(null);
@@ -165,7 +167,7 @@ public class Grid {
         int[][] directionsY = {{0,-1}, {0,1}};
 
         for(int[] dir : directionsX){
-            for(int i = 1; p.getX()+dir[0]*i<this.gridSize && p.getX()+dir[0]*i>0; i++){
+            for(int i = 1; p.getX()+dir[0]*i<this.gridSize && p.getX()+dir[0]*i>=0; i++){
                 Position pion_pos = new Position(p.getX()+dir[0]*i, p.getY());
                 Pions pions = null;
                 try {
@@ -180,7 +182,7 @@ public class Grid {
             }
         }
         for(int[] dir : directionsY){
-            for(int i = 1; p.getY()+dir[1]*i<this.gridSize && p.getY()+dir[1]*i>0; i++){
+            for(int i = 1; p.getY()+dir[1]*i<this.gridSize && p.getY()+dir[1]*i>=0; i++){
                 Position pion_pos = new Position(p.getX(), p.getY()+dir[1]*i);
                 Pions pions = null;
                 try {
@@ -195,11 +197,13 @@ public class Grid {
             }
         }
         if(alignedX.size()>=this.pionsAligne){
-            this.score.notifyScoreChanged(10+alignedX.size()-this.pionsAligne);
+            this.currentScore += 10+alignedX.size()-this.pionsAligne;
+            this.score.notifyScoreChanged(this.currentScore);
             this.removeAllPositions(alignedX);
         }
         if(alignedY.size()>=this.pionsAligne){
-            this.score.notifyScoreChanged(10+alignedY.size()-this.pionsAligne);
+            this.currentScore += 10 + alignedY.size() - this.pionsAligne;
+            this.score.notifyScoreChanged(this.currentScore );
             this.removeAllPositions(alignedY);
         }
     }
