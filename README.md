@@ -1,26 +1,26 @@
-#Rendu Projet OPEN GL 
+# Rendu Projet OPEN GL 
 
 Lien du git : https://github.com/Pierre-ZACHARY/OpenG.ES
 
-Pierre ZACHARY
+## Pierre ZACHARY
 
 Pour ce projet j'ai proposé une solution pour répondre au sujet en utilisant OpenGL.
 
 Vous trouverez avec ce README un fichier video MP4 correspondant à une démonstration du jeu.
 
 Voici les points auxquels j'ai répondu : 
-[*] Proposer au moins un niveau de jeu avec une grille 9×9, 7 pions différents et des alignements à 5 pions (et plus). Les pions peuvent être des carrés.
+- [x] Proposer au moins un niveau de jeu avec une grille 9×9, 7 pions différents et des alignements à 5 pions (et plus). Les pions peuvent être des carrés.
   - Correspond au niveau 1 dans le jeu
   - Les 7 pions utilisent des images provenant de candy crush
-[*] Vous pouvez également améliorer en proposant d’autres niveaux par exemple débutant avec une grille 7×7, 5 pions différents et des alignements à 4 pions.
+- [x] Vous pouvez également améliorer en proposant d’autres niveaux par exemple débutant avec une grille 7×7, 5 pions différents et des alignements à 4 pions.
   - Correspond au niveau 2 dans le jeu
-[*] Lorsque le déplacement n’est pas possible 
+- [x] Lorsque le déplacement n’est pas possible 
   - Il y a une image de séléction qui s'affiche sur un pion lorsqu'on le sélectionne. Cette image disparait au moment du déplacement ou si celui-ci est impossible.
-[*] Intégrer un affichage particulier lorsque le taux de remplissage de la grille est trop important (+ de 70%). Vous pouvez utiliser de la lumière ou un fond diférent etc.
+- [x] Intégrer un affichage particulier lorsque le taux de remplissage de la grille est trop important (+ de 70%). Vous pouvez utiliser de la lumière ou un fond diférent etc.
   - Pour ma part j'ai choisit de modifier la scène totalement ( scène de gameover ), lorsque la grille est rempli, je ne sais pas si ça compte comme une modification de background.
-[*] Proposer plusieurs représentations des pions combinant des formes différentes et des couleurs.
+- [x] Proposer plusieurs représentations des pions combinant des formes différentes et des couleurs.
   - Pour l'affichage des images j'ai eu besoin d'utiliser des textures, et donc de dessiner deux triangles sur lesquels je vient poser ma texture. La gestion d'une texture se fait dans la classe "SpriteRenderer" contenu dans view.component.renderer .
-[*] Intégrer l’affichage du score.
+- [x] Intégrer l’affichage du score.
   - Pour implémenter l'affichage du score, j'ai à nouveau utiliser des textures, sauf que celle-ci est généré via la classe Canvas de android.graphics. Cette classe ainsi que la classe Paint me permettent de générer un bitmap, chaque fois que le texte change, il ne reste alors plus qu'a chargé ce bitmap sur le gpu et à l'afficher sur mes triangles comme je le fais pour mes autres textures.
   - L'inconvénient de mon implémentation est que l'espace disponible sur la texture ne s'adapte pas au texte : celui-ci est toujours centré sur la texture, mais la texture ne s'agrandi pas si le texte dépasse. Cependant je n'ai pas eu besoin de plus d'espace pour mon implémentation.
   - Vous pouvez retrouver cela dans la classe TextRenderer contenu dans view.component.renderer
@@ -29,7 +29,7 @@ Points que j'aimerai ajouté :
   - Le jeu s'affiche correctement même après une rotation d'écran
   - 100% de l'affichage provient d'OpenGL, il n'y a pas d'éléments provenant de l'api Android native, y compris les boutons ou le texte ... 
 
-Explications : 
+## Explications : 
 
 Tout d'abord pour le fonctionnement du jeu, il y a un modèle qui s'occupe de la grille de pions, de placer chaque pions aléatoirement, ou encore des déplacements de chaque pions ( via algorithme A*, vu en cours d'IA ).
 
