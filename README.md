@@ -25,9 +25,10 @@ Voici les points auxquels j'ai répondu :
   - L'inconvénient de mon implémentation est que l'espace disponible sur la texture ne s'adapte pas au texte : celui-ci est toujours centré sur la texture, mais la texture ne s'agrandi pas si le texte dépasse. Cependant je n'ai pas eu besoin de plus d'espace pour mon implémentation.
   - Vous pouvez retrouver cela dans la classe TextRenderer contenu dans view.component.renderer
 
-Points que j'aimerai ajouté :
-  - Le jeu s'affiche correctement même après une rotation d'écran
-  - 100% de l'affichage provient d'OpenGL, il n'y a pas d'éléments provenant de l'api Android native, y compris les boutons ou le texte ... 
+Points qui m'ont pris du temps et que j'aimerai ajouté :
+  - Le jeu s'affiche correctement même après une rotation d'écran, pour cela j'utilise plusieurs scène qui définissent la position des différents objets selon l'orientation de l'écran
+  - 100% de l'affichage provient d'OpenGL, il n'y a pas d'éléments provenant de l'api Android native, y compris les boutons ou le texte, pour cela j'ai fait en sorte de pouvoir changer de scène sans changer d'activitée
+  - J'ai ajouté des animations de déplacements pour mes pions, basé sur le temps écoulé entre chaque draw ( ex : je peux demander à un pion de se déplacer à une position x,y en 0.5s, et à chaque nouveau draw sa position sera recalculé )
 
 ## Explications : 
 
